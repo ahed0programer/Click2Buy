@@ -28,7 +28,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -43,9 +43,12 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-
+       
         Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+        
+        return $request->wantsJson()? response()->json([
+            "ahed"=>"it has been registered successfully",
+            "access_token"=>$user->createToken("auth_token")->plainTextToken
+        ]): redirect(RouteServiceProvider::HOME);
     }
 }
