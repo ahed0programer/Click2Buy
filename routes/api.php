@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\OtpController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,3 +36,8 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
  
     return redirect('/home');
 })->middleware(['auth', 'signed'])->name('verification.verify');
+
+
+Route::get('/send-otp-code',[OtpController::class,"send"]);
+
+Route::get('/check-otp-code/{otp_code}',[OtpController::class,"check"]);
