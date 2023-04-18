@@ -41,3 +41,5 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 Route::get('/send-otp-code',[OtpController::class,"send"]);
 
 Route::get('/check-otp-code/{otp_code}',[OtpController::class,"check"]);
+
+Route::get('send-notification',[OtpController::class,"send_notification"]);
