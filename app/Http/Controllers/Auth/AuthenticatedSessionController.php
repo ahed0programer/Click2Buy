@@ -63,4 +63,13 @@ class AuthenticatedSessionController extends Controller
             "AccessToken"=>$AccessToken,
         ]);
     }
+
+    public function logout_api(){
+        auth()->user()->currentAccessToken()->delete();
+    
+        return response()->json([
+            "status"=>true,
+            "message"=>"you are logged out"
+        ]);
+    }
 }
