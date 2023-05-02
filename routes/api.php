@@ -22,24 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('register', [RegisteredUserController::class, 'store']);
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('verify-email', EmailVerificationPromptController::class)->middleware(['throttle:6,1'])
-                ->name('verification.notice');
-
-});
-
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-
-    $request->fulfill();
- 
-    return redirect('/home');
-})->middleware(['auth', 'signed'])->name('verification.verify');
 
 
-Route::get('/send-otp-code',[OtpController::class,"send"]);
 
-Route::get('/check-otp-code/{otp_code}',[OtpController::class,"check"]);
 
 Route::get('send-notification',[OtpController::class,"send_notification"]);
+
+require __DIR__."auth_api.php";
