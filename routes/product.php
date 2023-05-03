@@ -18,13 +18,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    
+    Route::get('products',[]);
 });
 
 
-
-Route::get('send-notification',[OtpController::class,"send_notification"]);
-
 require __DIR__."auth_api.php";
-require __DIR__."product.php";

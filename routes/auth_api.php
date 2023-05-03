@@ -16,6 +16,9 @@ Route::post('login', [AuthenticatedSessionController::class, 'login_api']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get("/logout",[AuthenticatedSessionController::class,"store"]);
+
     Route::get('verify-email', EmailVerificationPromptController::class)->middleware(['throttle:6,1'])
                 ->name('verification.notice');
 });
