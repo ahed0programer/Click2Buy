@@ -26,5 +26,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('send-notification',[OtpController::class,"send_notification"]);
 
-require __DIR__."auth_api.php";
-require __DIR__."product.php";
+require __DIR__."/auth_api.php";
+
+require __DIR__."/product.php";

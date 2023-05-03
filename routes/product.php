@@ -1,10 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\EmailVerificationPromptController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\OtpController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +17,3 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('products',[]);
 });
-
-
-require __DIR__."auth_api.php";
