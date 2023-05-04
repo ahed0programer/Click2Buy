@@ -51,11 +51,17 @@ class AuthenticatedSessionController extends Controller
     public function login_api(Request $request){
         $request->validate([
             "email"=>"required|email",
-            "password"=>"password"
+            "password"=>"required|string"
         ]);
 
-        $user =  User::find("email" , $request->email);
+        $user =  User::where("email",$request->email)->first();
 
+        if(!$user){
+            return response()->json([
+                "status"=>false,
+                "message"=>__("the email you have entered is incorrect. Don't you have account"),
+            ]);
+        }
         $AccessToken = $user->createToken("auth_token")->plainTextToken;
     
         return response()->json([
@@ -63,6 +69,7 @@ class AuthenticatedSessionController extends Controller
             "message"=>"you are logged in",
             "AccessToken"=>$AccessToken,
         ]);
+        
     }
 
     public function logout_api(){

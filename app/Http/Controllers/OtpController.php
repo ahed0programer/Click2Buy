@@ -6,9 +6,12 @@ use App\Mail\OtpCodeMailable;
 use App\Models\User;
 use App\Notifications\OtoNoti_via_SmS;
 use Ichtrojan\Otp\Otp;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 
 class OtpController extends Controller
 {
@@ -16,15 +19,47 @@ class OtpController extends Controller
 
     public function send(){
         $otp = new Otp();
-        $code=$otp->generate("ahed@gmail.com",4,1);
-        //Mail::to("ahedsuleiman@gmail.com")->send(new OtpCodeMailable($code->token));
-        Notification::sendNow(User::where("id",1)->get(),new OtoNoti_via_SmS("+963996840955"));
-        return "please enter the code we just sent to your email";
+        //$user =User::find("id",auth()->user()->id);
+        $code=$otp->generate(auth()->user()->id,5,3);
+        Mail::to("ahedsuleiman@gmail.com")->send(new OtpCodeMailable($code->token));
+        //Notification::sendNow(User::where("id",1)->get(),new OtoNoti_via_SmS("+963996840955"));
+        return response()->json([
+            "status"=>1,
+            "message"=>__("please enter the verification code we sent to your email"),
+            "url"=>URL::signedRoute('verification.otp', ['hash' => auth()->user()->id])
+        ]);
     }
 
-    public function check($otp_code){
+    // public function check($otp_code){
+    // }
+
+    public function verify(Request $request , $otp_code) {
+
         $otp = new Otp();
-        return $otp->validate("ahed@gmail.com", $otp_code);
+        $user =User::where("id",auth()->user()->id)->first();
+
+        $result_of_check =$otp->validate(auth()->user()->id, $request->otp_code);
+        if( $result_of_check->status)
+        {
+            //$request->fulfill();
+            if (!$user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+    
+                event(new Verified($user));
+            }
+
+        }else{
+            return response()->json([
+                "status"=>0,
+                "message"=>$result_of_check
+            ],404);
+        }
+
+        return response()->json([
+            "status"=>1,
+            "message"=>"your email has been verified"
+        ]);
+        
     }
 
     public function send_notification(){

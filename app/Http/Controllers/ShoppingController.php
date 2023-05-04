@@ -11,4 +11,8 @@ class ShoppingController extends Controller
     public function buyOrder(Request $request){
 
     }
+
+    public function getProducts(){
+        
+    }
 }
