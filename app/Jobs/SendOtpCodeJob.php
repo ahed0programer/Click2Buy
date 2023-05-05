@@ -16,13 +16,15 @@ class SendOtpCodeJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $token;
+    public $to;
     /**
      * Create a new job instance.
      */
-    public function __construct($token)
+    public function __construct($to,$token)
     {
         //
         $this->token = $token;
+        $this->to=$to;
     }
 
     /**
@@ -31,7 +33,7 @@ class SendOtpCodeJob implements ShouldQueue
     public function handle(): void
     {
         //
-        Mail::to("ahedsuleiman@gmail.com")->send(new OtpCodeMailable($this->token));
+        Mail::to($this->to)->send(new OtpCodeMailable($this->token));
 
     }
 }
