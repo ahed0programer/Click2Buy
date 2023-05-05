@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendOtpCodeJob;
 use App\Mail\OtpCodeMailable;
 use App\Models\User;
 use App\Notifications\OtoNoti_via_SmS;
@@ -21,17 +22,14 @@ class OtpController extends Controller
         $otp = new Otp();
         //$user =User::find("id",auth()->user()->id);
         $code=$otp->generate(auth()->user()->id,5,3);
-        Mail::to("ahedsuleiman@gmail.com")->send(new OtpCodeMailable($code->token));
+        dispatch(new SendOtpCodeJob($code));
         //Notification::sendNow(User::where("id",1)->get(),new OtoNoti_via_SmS("+963996840955"));
         return response()->json([
             "status"=>1,
             "message"=>__("please enter the verification code we sent to your email"),
-            "url"=>URL::signedRoute('verification.otp', ['hash' => auth()->user()->id])
+            "url"=>URL::signedRoute('verification.otp', ['id' => auth()->user()->id])
         ]);
     }
-
-    // public function check($otp_code){
-    // }
 
     public function verify(Request $request , $otp_code) {
 
@@ -66,6 +64,5 @@ class OtpController extends Controller
 
         Notification::sendNow(User::where("id",1)->get(),new OtoNoti_via_SmS("+000000"));
         return "notification sent successfuly";
-        
     }
 }
