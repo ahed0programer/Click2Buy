@@ -1,9 +1,6 @@
 <?php
 
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\ProfileController;
->>>>>>> ahed
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,8 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-<<<<<<< HEAD
-=======
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -34,4 +29,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
->>>>>>> ahed
