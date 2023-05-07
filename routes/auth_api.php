@@ -21,9 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/email/verify/{id}', [OtpController::class,"verify"])
                 ->middleware(['signed','throttle:5,3'])->name('verification.otp');
-
-    Route::get("/forgot-password/{email}",[OtpController::class,"sendResetOtpCode"]);
-    Route::post("/forgot-password/check-OTP",[OtpController::class,]);
-    Route::post("/reset-password",[OtpController::class,]);
-
 });
+
+Route::get("/forgot-password/{email}",[OtpController::class,"sendResetPasswordOtpCode"])
+            ->middleware("throttle:1,3");
+Route::post("/forgot-password/check-OTP",[OtpController::class,"check_otp_code_to_password_reset"])
+            ->middleware("throttle:5,3");
+Route::post("/forgot-password/reset",[OtpController::class,"resetPassword"]);
+
