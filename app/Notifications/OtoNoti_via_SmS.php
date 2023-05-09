@@ -41,7 +41,6 @@ class OtoNoti_via_SmS extends Notification implements ShouldQueue
                     ->line('this the verification code')
                     ->line('Do not give it to anyone ')
                     ->line($this->otp_code)
-                    ->theme("dark")
                     ->line('Thank you for using our application!');
     }
 

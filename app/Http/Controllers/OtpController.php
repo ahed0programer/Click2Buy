@@ -26,7 +26,7 @@ class OtpController extends Controller
 
     public function send(){
         $otp = new Otp();
-        $user =User::find("id",auth()->user()->id);
+        $user = User::where("id",auth()->user()->id)->first();
         $code=$otp->generate($user->id,5,3);
 
         $user->notify(new OtoNoti_via_SmS($code->token));
