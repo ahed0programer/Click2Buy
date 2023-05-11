@@ -9,6 +9,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -62,13 +63,22 @@ class AuthenticatedSessionController extends Controller
                 "message"=>__("the email you have entered is incorrect. Don't you have account"),
             ]);
         }
-        $AccessToken = $user->createToken("auth_token")->plainTextToken;
-    
-        return response()->json([
-            "status"=>true,
-            "message"=>"you are logged in",
-            "AccessToken"=>$AccessToken,
-        ]);
+        if(Hash::check($request->password,$user->password)){
+            $AccessToken = $user->createToken("auth_token")->plainTextToken;
+        
+            return response()->json([
+                "status"=>true,
+                "message"=>"you are logged in",
+                "AccessToken"=>$AccessToken,
+            ]);
+         }
+        else
+        {
+            return response()->json([
+                "status"=>true,
+                "message"=>"inncorrect password",
+            ]);
+        }
         
     }
 

@@ -5,21 +5,21 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 
-class OtoNoti_via_SmS extends Notification implements ShouldQueue
+class ResetPasswordCodeNoti extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $otp_code;
+    public $otpcode;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct($otp_code)
+    public function __construct($code)
     {
         //
-        $this->otp_code=$otp_code;
+        $this->otpcode=$code;
     }
 
     /**
@@ -38,17 +38,11 @@ class OtoNoti_via_SmS extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('this the verification code')
-                    ->line('Do not give it to anyone ')
-                    ->line($this->otp_code)
+                    ->line('this is your code to reset your password.')
+                    ->line("don't give it to any one.")
+                    ->line($this->otpcode)
+                    ->action('more information', url('/'))
                     ->line('Thank you for using our application!');
-    }
-
-    public function toVonage(object $notifiable): VonageMessage
-    {
-        return (new VonageMessage)
-                    ->content('Your SMS message content')
-                    ->from("+963996840955");
     }
 
     /**
