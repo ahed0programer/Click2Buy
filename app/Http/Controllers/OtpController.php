@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendingOTPcodeJob;
 use App\Jobs\SendOtpCodeJob;
+use App\Jobs\test;
 use App\Models\User;
 use App\Notifications\OtoNoti_via_SmS;
+use App\Notifications\ResetPasswordCodeNoti;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
@@ -17,14 +20,20 @@ use Illuminate\Support\Str;
 
 class OtpController extends Controller
 {
-    //
+    // this part is related to email verification operation
+    // the otp code is sent by email 
+    // ........
 
     public function send(){
         $otp = new Otp();
-        $user =User::find("id",auth()->user()->id);
+        $user = User::where("id",auth()->user()->id)->first();
         $code=$otp->generate($user->id,5,3);
-        dispatch(new SendOtpCodeJob($user->email,$code));
+
+        $user->notify(new OtoNoti_via_SmS($code->token));
+
+        //dispatch(new SendOtpCodeJob($user->email,$code));
         //Notification::sendNow(User::where("id",1)->get(),new OtoNoti_via_SmS("+963996840955"));
+       
         return response()->json([
             "status"=>1,
             "message"=>__("please enter the verification code we sent to your email"),
@@ -68,15 +77,27 @@ class OtpController extends Controller
         
     }
 
+    // the part below is related to forgot password operation
+    // this happen on 3 phases :
+    // 1- requesting otp code   
+    // 2- checking the otp code and returning a reset token
+    // 3- reset password 
+
     public function sendResetPasswordOtpCode($email){
         $otp = new Otp();
-        $user =User::find("email",$email);
+        $user =User::where("email",$email)->first();
+
+        if(!$user){
+            return response()->json([
+                "status"=>false,
+                "message"=>__("incorrect email !!"),
+            ]);
+        }
 
         $code=$otp->generate($user->id,5,3);
 
-        dispatch(new SendOtpCodeJob($user->email,$code));
+        $user->notify(new ResetPasswordCodeNoti($code->token));
 
-        //Notification::sendNow(User::where("id",1)->get(),new OtoNoti_via_SmS("+963996840955"));
         return response()->json([
             "status"=>1,
             "message"=>__("please enter the OTP code we emailed to you to reset your password"),
@@ -87,7 +108,7 @@ class OtpController extends Controller
 
         $request->validate([
             "email"=>"required|email",
-            "token"=>"required"
+            "code"=>"required"
         ]);
 
         $otp = new Otp();
@@ -101,6 +122,7 @@ class OtpController extends Controller
         }
         
         $check = $otp->validate($user->id , $request->code);
+
         if($check->status){
 
             $reset_token=Password::createToken($user);
@@ -114,7 +136,7 @@ class OtpController extends Controller
         }else{
             return response()->json([
                 "status"=>false,
-                "message"=>"incorrect code",
+                "message"=>"incorrect OTP code",
                 "OTP"=>$check
             ]);
         }
@@ -140,39 +162,23 @@ class OtpController extends Controller
             ],404);
         }
 
-        $result_of_check =$otp->validate($user->id, $request->otp_code);
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+        
+                $user->save();
+        
+                event(new PasswordReset($user));
+            }
+        );
 
-        if($result_of_check->status)
-        {
-            $status = Password::reset(
-                $request->only('email', 'password', 'password_confirmation', 'token'),
-                function (User $user, string $password) {
-                    $user->forceFill([
-                        'password' => Hash::make($password)
-                    ])->setRememberToken(Str::random(60));
-         
-                    $user->save();
-         
-                    event(new PasswordReset($user));
-                }
-            );
-        }
-        else{
-            return response()->json([
-                "status"=>false,
-                "message"=>$result_of_check
-            ],404);
-        }
-
-        return response()->json([
-            "status"=>true,
-            "message"=>"your password has been reset"
-        ]);
+        return $status == Password::PASSWORD_RESET
+            ?  response()->json([ "message"=>"your password has been reset" ])
+            :  response()->json([ "message"=>"failed to reset your password" ],500);
+        
     }
 
-    public function send_notification(){
-
-        Notification::sendNow(User::where("id",1)->get(),new OtoNoti_via_SmS("+000000"));
-        return "notification sent successfuly";
-    }
 }
