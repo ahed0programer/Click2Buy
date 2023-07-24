@@ -182,8 +182,8 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Ichtrojan\Otp\OtpServiceProvider::class,
-
-        /*
+        Kalnoy\Nestedset\NestedSetServiceProvider::class,
+                /*
          * Package Service Providers...
          */
 

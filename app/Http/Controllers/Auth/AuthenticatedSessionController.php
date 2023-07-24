@@ -70,14 +70,14 @@ class AuthenticatedSessionController extends Controller
                 "status"=>true,
                 "message"=>"you are logged in",
                 "AccessToken"=>$AccessToken,
-            ]);
+            ], 200);
          }
         else
         {
             return response()->json([
-                "status"=>true,
+                "status"=>false,
                 "message"=>"inncorrect password",
-            ]);
+            ], 402);
         }
         
     }

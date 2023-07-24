@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -35,11 +36,12 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
+        $role_id = Role::where('type' , 'normal')->first()->id;
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $role_id,
         ]);
 
         event(new Registered($user));
@@ -47,7 +49,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
         
         return $request->wantsJson()? response()->json([
-            "ahed"=>"it has been registered successfully",
+            "message"=>"it has been registered successfully",
             "access_token"=>$user->createToken("auth_token")->plainTextToken
         ]): redirect(RouteServiceProvider::HOME);
     }

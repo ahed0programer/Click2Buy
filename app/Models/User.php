@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable; 
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'role_id'
     ];
 
     /**
@@ -41,4 +42,28 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function role()
+    {
+
+        return $this->hasOne(role::class, 'role_id');
+    }
+
+    public function products()
+    {
+
+        return $this->belongsToMany(Product::class);
+    }
+
+    public function orders()
+    {
+
+        return $this->hasMany(Order::class);
+    }
+
+    public function getRole($role_id)
+    {
+        $role = Role::where('id', $role_id)->first()->type;
+        return $role;
+    }
 }
