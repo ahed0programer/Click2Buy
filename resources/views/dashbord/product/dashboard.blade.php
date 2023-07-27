@@ -380,7 +380,7 @@
                                     <button class="">
                                         <i class="fa fa-trash"></i>
                                         <a href="{{ route('softDeleteProduct', $prod->id) }}"><img
-                                                src="image/delete.png" alt="delete" style="width:30px"></a>
+                                                src="{{asset("image/delete.png")}}" alt="delete" style="width:30px"></a>
                                     </button>
                                 </td>
                             </tr>

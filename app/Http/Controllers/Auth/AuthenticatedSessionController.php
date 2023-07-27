@@ -61,7 +61,7 @@ class AuthenticatedSessionController extends Controller
             return response()->json([
                 "status"=>false,
                 "message"=>__("the email you have entered is incorrect. Don't you have account"),
-            ]);
+            ],404);
         }
         if(Hash::check($request->password,$user->password)){
             $AccessToken = $user->createToken("auth_token")->plainTextToken;

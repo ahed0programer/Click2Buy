@@ -30,6 +30,9 @@ Route::post('creatProduct', [ProductController::class, "creat_product"])->name('
 Route::get('pageEditProduct/{id}', [ProductController::class, "pageEditProduct"])->name('pageEditProduct');
 Route::post('editProduct/{id}', [ProductController::class, "edit_product"])->name('editProduct');
 
+Route::get('deleteInventory/{id}',[ProductController::class, "delete_inventory"])->name('deleteInventory');
+Route::post('addInventory-To-Product/{id}',[ProductController::class, "add_inventory"])->name('addInventory');
+
 //category
 Route::get('showcategory', [CategoryController::class, "showcategory"])->name('showcategory');
 Route::get('pageaddcategory', [CategoryController::class, "pageaddcategory"])->name('pageaddcategory');

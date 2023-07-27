@@ -819,58 +819,6 @@
 </script>
 
 
-{{-- <script>
-    var count = 1;
-
-    function checkInputValue(event, input) {
-        if (event.inputType === 'insertText' && input.value.length >= 2) {
-            // create new input field
-            var newInput = document.createElement('input');
-            newInput.type = 'text';
-            newInput.id = 'colours-' + (count + 1);
-            newInput.name = "colours[]";
-            newInput.list = 'colours-' + (count + 1);
-            newInput.placeholder = 'colour';
-            newInput.oninput = function(event) {
-                checkInputValue(event, this);
-            };
-            newInput.onfocusout = function() {
-                if (this.value === '') {
-                    this.parentNode.parentNode.removeChild(this.parentNode);
-                }
-            };
-
-            // create new datalist
-            var newDatalist = document.createElement('datalist');
-            newDatalist.id = 'colours-' + (count + 1);
-            newDatalist.innerHTML = input.list.innerHTML;
-
-            // create new div container
-            var newDiv = document.createElement('div');
-            newDiv.className = 'form-field field-2 medium';
-            newDiv.id = 'colours-' + (count + 1) + '-container';
-            newDiv.style.display = 'none';
-
-            // append new input field and datalist to new div container
-            newDiv.appendChild(newInput);
-            newDiv.appendChild(newDatalist);
-
-            // insert new div container after current input field container
-            input.parentNode.parentNode.insertBefore(newDiv, input.parentNode.nextSibling);
-
-            // increment count variable
-            count++;
-
-            // show new input field container
-            newDiv.style.display = 'block';
-
-            // focus on new input field
-            newInput.focus();
-        }
-    }
-</script> --}}
-
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -1023,39 +971,6 @@
 </script>
 
 <script>
-//    function addP() {
-//        // Retrieve the CSRF token from a meta tag in your HTML layout
-//        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-   
-//        const title = document.getElementById();
-//        const description = document.getElementById();
-//        const category = document.getElementById();
-//        const brand = document.getElementById();
-//        const title = document.getElementById();
-//        const title = document.getElementById();
-//        fetch("{{route('creatProduct')}}", {
-//            method: 'POST',
-//            headers: {
-//                'Content-Type': 'application/json',
-//                'X-CSRF-TOKEN': csrfToken // Include the CSRF token in the headers
-//            },
-//            body: JSON.stringify({
-//                dataArray: possibilities,
-//                additionalField: 'additional value',
-//                // Additional form fields
-//            })
-//        })
-
-//        .then(response => response.text())
-//        .then(data => {
-//            // Handle the response from the server
-//            alert(" OK " + data);
-//        })
-//        .catch(function(error) {
-//            // Handle any errors
-//            alert("Cannot send request");
-//        });
-//    }
 
    // Assuming you have a form with id "myForm" and an array called "dataArray"
    const form = document.getElementById('add_p');
@@ -1097,33 +1012,5 @@
     });
 </script>
 
-
-
-{{-- <script>
-    function saveProduct() {
-        var possibilities = generatePossibilities(); // توليد المصفوفة
-
-        // قم باسترداد بيانات النموذج
-        var formData = new FormData($(".new-product-form")[0]);
-
-        // أضف المصفوفة المتولدة إلى بيان البيانات
-        formData.append("possibilities", JSON.stringify(possibilities));
-
-        // إرسال طلب HTTP POST باستخدام AJAX
-        $.ajax({
-            type: "POST",
-            url: "{{ route('creatProduct') }}",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                alert("Product saved successfully.");
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error saving product: " + errorThrown);
-            }
-        });
-    }
-</script> --}}
 
 </html>

@@ -37,7 +37,6 @@ class ProductController extends Controller
 
         $possibilities = json_decode($request->possibilities);
 
-        
         if (empty(Brand::where('name', $request->brand)->first())) {
             Brand::create([
                 'name' => $request->brand,
@@ -110,8 +109,6 @@ class ProductController extends Controller
         return response()->json(['message' => "it is been added successfully"]);
     }
 
-
-
     public function pageEditProduct($id)
     {
         $size = Size::get();
@@ -123,7 +120,14 @@ class ProductController extends Controller
         $offer = Offer::where('id', $product->offer_id)->first()->value;
         $brand_id = Product::where('id', $id)->first()->brand_id;
         $brand_product = Brand::where('id', $brand_id)->first()->name;
-        $productsInventory = Inventory::where('product_id', $id)->get();
+        //$productsInventory = Inventory::where('product_id', $id)->get();
+        $productsInventory = Inventory::where('product_id', $id)
+            ->join('colours', 'inventories.colour_id', '=', 'colours.id')
+            ->join('materials', 'inventories.material_id', '=', 'materials.id')
+            ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
+            ->select('inventories.id as id','colours.name as colour', 'materials.name as material', 'sizes.size as size','size_id','colour_id','material_id', 'quantity', 'price')
+            ->get();
+
         $colourIds = $productsInventory->pluck('colour_id');
         $colours = Colour::whereIn('id', $colourIds)->get();
         $materialIds = $productsInventory->pluck('material_id');
@@ -254,6 +258,50 @@ class ProductController extends Controller
         // return view('dashboard', compact('product'));
     }
 
+    public function delete_inventory($id){
+        $inventory = Inventory::find($id);
+        
+        if ($inventory) {
+            $inventory->delete();
+            // Record found and deleted successfully
+        } else {
+            // Record not found
+            return response()->json([
+                "message"=>"not found"
+            ],404);
+        }
+
+        return response()->json([
+            "message"=>"option deleted successfully"
+        ]);
+    }
+
+    public function add_inventory(Request $request,$id){
+
+        $color_model = Colour::where('name', $request->option["color"])->first();
+        if (empty($color_model)) {
+            $color_model = Colour::create(['name' => $request->option["color"]]);
+        }
+        $material_model = Material::where('name', $request->option["material"])->first();
+        if (empty($material_model)) {
+            $material_model = Material::create(['name' => $request->option["material"]]);
+        }
+
+        $size_model = Size::where('size', $request->option["size"])->first();
+
+        Inventory::create([
+            'product_id' => $id,
+            'colour_id' => $color_model->id,
+            'material_id' => $material_model->id,
+            'size_id' => $size_model->id,
+            'price' => $request->option["price"],
+            'quantity' => $request->option["quantity"]
+        ]);
+
+        return response()->json([
+            "message"=>json_encode($request->option)
+        ]);
+    }
 
     public function softDelete($id)
     {

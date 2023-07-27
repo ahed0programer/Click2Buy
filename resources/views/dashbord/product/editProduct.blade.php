@@ -199,6 +199,14 @@
             color: white
         }
 
+        .hover-image{
+            position: relative;
+            top: -11%;
+            left: -37%;
+            width: 250px;
+            height: auto;
+        }
+
         .msh-logo {
             width: auto;
             max-width: 150px;
@@ -512,6 +520,7 @@
 
 <body class="font-sans antialiased">
 
+    
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
         @include('layouts.navigation')
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
@@ -519,7 +528,6 @@
 
         <div class="backend-root">
             <header>
-
             </header>
             <div class="body-root">
                 <div class="body-section">
@@ -700,7 +708,7 @@
                                                 <label for="colors">Colors:</label>
                                                 <input type="text" id="colors" name="colors" list="colors"
                                                     placeholder="Colors" style="border-radius: 8px;"
-                                                    value="@foreach ($colours as $colour){{ $colour->name }}@if (!$loop->last), @endif @endforeach">
+                                                    value="@foreach ($colours as $colour){{$colour->name}}@if (!$loop->last),@endif @endforeach">
                                                 <datalist id="Colors">
                                                     @if ($colours->count() > 0)
                                                         @foreach ($colours as $colour)
@@ -710,30 +718,26 @@
                                                 </datalist>
 
                                                 <label for="materials">Materials:</label>
-                                                <input type="text" id="materials" name="materials"
-                                                    placeholder="Materials" style="border-radius: 8px;"
-                                                    value="@foreach ($materials as $materials){{ $materials->name }}@if (!$loop->last), @endif @endforeach">
+                                                <input type="text" id="materials" name="materials" placeholder="Materials" style="border-radius: 8px;"
+                                                value="@foreach($materials as $material){{$material->name}}@if(!$loop->last),@endif @endforeach">
 
-
-                                                    <div class="checkbox-group">
-                                                        <label for="sizes">Sizes:</label><br>
-                                                        @foreach ($size as $size)
-                                                            @php
-                                                                $isChecked = false;
-                                                                foreach ($productsInventory as $inventory) {
-                                                                    if ($inventory->size_id == $size->id && $inventory->product_id == $product->id) {
-                                                                        $isChecked = true;
-                                                                        break;
-                                                                    }
+                                                <div class="checkbox-group">
+                                                    <label for="sizes">Sizes:</label><br>
+                                                    @foreach ($size as $size)
+                                                        @php
+                                                            $isChecked = false;
+                                                            foreach ($productsInventory as $inventory) {
+                                                                if ($inventory->size_id == $size->id) {
+                                                                    $isChecked = true;
+                                                                    break;
                                                                 }
-                                                            @endphp
-                                                            <input type="checkbox" name="sizes[]" value="{{ $size->size }}" @if ($isChecked) checked @endif>{{ $size->size }}<br>
-                                                        @endforeach
-                                                    </div>
+                                                            }
+                                                        @endphp
+                                                        <input type="checkbox" name="sizes[]" value="{{ $size->size }}" @if ($isChecked) checked @endif>{{ $size->size }}<br>
+                                                    @endforeach
+                                                </div>
 
-                                                <button onclick="generatePossibilities(); return false;"
-                                                    style="border-radius: 8px;">Generate
-                                                    Possibilities</button>
+                                                <div><button type="button" id="generate" onclick="generatePossibilities()" >Generate Possibilities</button></div>
                                                 <br><br>
                                                 <table id="possibilities-table" for="possibilities">
                                                     <thead>
@@ -747,20 +751,41 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        @foreach ($productsInventory as $inventory)
+                                                            <tr>
+                                                                <th>{{$inventory->colour}}</th>
+                                                                <th>{{$inventory->material}}</th>
+                                                                <th>{{$inventory->size}}</th>
+                                                                <th>{{$inventory->price}}</th>
+                                                                <th>{{$inventory->quantity}}</th>
+                                                                <th><button type="button" onclick="delete_inventory({{$inventory->id}})"> <img src="{{asset('image/delete.png')}}" alt="delete" style="width:20px"></button></th>
+                                                                {{-- <div class="hover-image">
+                                                                    <img src="{{asset("image/plus.png")}}" alt="">
+                                                                </div>  --}}
+                                                            </tr>
+                                                        @endforeach
                                                     </tbody>
+                                                    <input id="asset_path" type="hidden" value="{{asset("/")}}">
+                                                    <tbody id="second_body" style="background-color: #277929">
+
+                                                    </tbody>                           
                                                 </table>
+                                                <div class="hover-image">
+                                                    <img src="{{asset("image/plus.png")}}" alt="">
+                                                </div> 
                                             </div>
 
                                             <div class="form-field field-5 short"
                                                 style="background-color: #2e3847;
-                                        border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
+                                                border-radius: 8px;padding: 22px;
+                                                box-shadow: white 3px 3px 6px;">
                                                 <label for="photos"> Images:</label>
                                                 <input id="photos" type="file" name="photos[]" multiple>
                                                 <div id="preview"></div>
                                                 <div class="slider">
                                                     @foreach ($photos as $photo)
                                                         <div>
-                                                            <img src="{{ asset('storage/' . $photo) }}"
+                                                            <img src="{{ asset('storage/'. $photo) }}"
                                                                 alt="product image" style="width: 40%">
                                                         </div>
                                                     @endforeach
@@ -805,12 +830,9 @@
                                             </div>
 
                                             <div>
-                                                <button type="submit" class="button add">Save</button>
+                                                <button type="button" onclick="saveProduct()" class="button add">Save</button>
                                             </div>
-
                                         </form>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -848,10 +870,9 @@
                 </div>
             </footer>
         </div>
-</body>
+
 
 {{-- to make rich text descraption --}}
-
 <script src="https://cdn.tiny.cloud/1/YOUR_API_KEY/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
     tinymce.init({
@@ -876,60 +897,6 @@
 </script>
 
 
-{{-- <script>
-    var count = 1;
-
-    function checkInputValue(event, input) {
-        if (event.inputType === 'insertText' && input.value.length >= 2) {
-            // create new input field
-            var newInput = document.createElement('input');
-            newInput.type = 'text';
-            newInput.id = 'colours-' + (count + 1);
-            newInput.name = "colours[]";
-            newInput.list = 'colours-' + (count + 1);
-            newInput.placeholder = 'colour';
-            newInput.oninput = function(event) {
-                checkInputValue(event, this);
-            };
-            newInput.onfocusout = function() {
-                if (this.value === '') {
-                    this.parentNode.parentNode.removeChild(this.parentNode);
-                }
-            };
-
-            // create new datalist
-            var newDatalist = document.createElement('datalist');
-            newDatalist.id = 'colours-' + (count + 1);
-            newDatalist.innerHTML = input.list.innerHTML;
-
-            // create new div container
-            var newDiv = document.createElement('div');
-            newDiv.className = 'form-field field-2 medium';
-            newDiv.id = 'colours-' + (count + 1) + '-container';
-            newDiv.style.display = 'none';
-
-            // append new input field and datalist to new div container
-            newDiv.appendChild(newInput);
-            newDiv.appendChild(newDatalist);
-
-            // insert new div container after current input field container
-            input.parentNode.parentNode.insertBefore(newDiv, input.parentNode.nextSibling);
-
-            // increment count variable
-            count++;
-
-            // show new input field container
-            newDiv.style.display = 'block';
-
-            // focus on new input field
-            newInput.focus();
-        }
-    }
-</script> --}}
-
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function previewImages() {
         var preview = document.querySelector('#preview');
@@ -966,6 +933,9 @@
 
 <script>
     var possibilities = [];
+    var assets_path = document.getElementById("asset_path").value;
+    const selections = document.getElementById('selections')
+    //var taken_options = {{json_encode($productsInventory)}}
 
     function generatePossibilities() {
         // Get user input
@@ -980,31 +950,41 @@
         }
 
         // Generate possibilities
-        var possibilitiesArray = [];
-        for (var i = 0; i < colors.length; i++) {
-            for (var j = 0; j < materials.length; j++) {
-                for (var k = 0; k < sizes.length; k++) {
-                    var possibility = {
-                        color: colors[i],
-                        material: materials[j],
-                        size: sizes[k],
-                        price: 0,
-                        quantity: 0
-                    };
-                    possibilitiesArray.push(possibility);
-                }
-            }
-        }
+       
+       for (var i = 0; i < colors.length; i++) {
+           for (var j = 0; j < materials.length; j++) {
+               for (var k = 0; k < sizes.length; k++) {
+                   var possibility = {
+                       color: colors[i],
+                       material: materials[j],
+                       size: sizes[k],
+                       price: 0,
+                       quantity: 0
+                   };
+       
+                   var exists = possibilities.some(function (existingPossibility) {
+                       return existingPossibility.color === possibility.color &&
+                           existingPossibility.material === possibility.material &&
+                           existingPossibility.size === possibility.size;
+                   });
+       
+                   if (!exists) {
+                       possibilities.push(possibility);
+                   }
+               }
+           }
+       }
 
         // Add possibilities to main array
-        possibilities = possibilities.concat(possibilitiesArray);
+        alert(possibilities)
 
         // Display possibilities in table
-        var table = document.getElementById("possibilities-table").getElementsByTagName("tbody")[0];
+        var table = document.getElementById("second_body")
         table.innerHTML = "";
         for (var i = 0; i < possibilities.length; i++) {
             var possibility = possibilities[i];
             var row = table.insertRow();
+            row.id="row"+i;
             var colorCell = row.insertCell(0);
             var materialCell = row.insertCell(1);
             var sizeCell = row.insertCell(2);
@@ -1018,8 +998,12 @@
                 ", this.value)'>";
             quantityCell.innerHTML = "<input type='number' min='0' value='0' onchange='updateQuantity(" + i +
                 ", this.value)'>";
-            actionCell.innerHTML = "<button type='delete' onclick='deletePossibility(" + i + ")'>Delete</button>";
+            actionCell.innerHTML = "<button type='button' onclick='deletePossibility("+ i +")'><img src='"+assets_path+"image/delete.png' style='width:20px' alt='Remove'></button>"
+                                  +"<button type='button' onclick='add_inventory("+ i +")'><img src='"+assets_path+"image/plus.png' style='width:20px' alt='ADD'></button>";
         }
+
+        //const selections = document.getElementById('selections')
+        selections.value=possibilities;
     }
 
     function updatePrice(index, value) {
@@ -1029,27 +1013,35 @@
     function updateQuantity(index, value) {
         possibilities[index].quantity = parseInt(value);
     }
-
+    
+    
     function deletePossibility(index) {
+        
+        // Perform your desired action here
+        
         // Get table and row
-        var table = document.getElementById("possibilities-table");
-        var row = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[index];
+        var table = document.getElementById("second_body");
+        // var row = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[index];
 
-        // Check if row is locked
-        if (row.getAttribute("data-locked") === "true") {
-            alert("Cannot delete a locked possibility.");
-            return;
-        }
+        // // Check if row is locked
+        // if (row.getAttribute("data-locked") === "true") {
+        //     alert("Cannot delete a locked possibility.");
+        //     return;
+        // }
 
         // Remove possibility from array
         possibilities.splice(index, 1);
 
-        // Remove row from table
-        table.deleteRow(index);
-    }
-</script>
+        //const selections = document.getElementById('selections')
+        //selections.value=possibilities;
 
-<script>
+        var row = document.getElementById("row"+index)
+        // Remove row from table
+        row.remove(row)
+        //table.deleteRow(index);
+    }
+
+
     function saveProduct() {
         var possibilities = generatePossibilities(); // توليد المصفوفة
 
@@ -1075,5 +1067,49 @@
         });
     }
 </script>
+
+
+
+<script>
+    function delete_inventory(id){
+        // Send AJAX request
+        fetch('{{asset("/deleteInventory/")}}'+'/'+id, {
+        method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server
+            alert(data.message);
+        })
+        .catch(error => {
+            // Handle any errors
+            alert(error);
+        });
+    }
+
+   function add_inventory(index){
+        var row = document.getElementById("row"+index)
+        // Send AJAX request
+        fetch('{{asset("/addInventory-To-Product/")}}'+'/'+"{{$product->id}}", {
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRF-TOKEN':'{{csrf_token()}}'
+            },
+            body: JSON.stringify({"option":possibilities[index]})
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server
+                alert(data.message);
+            })
+            .catch(error => {
+                // Handle any errors
+                alert(error);
+            });
+    }
+
+</script>
+
 
 </html>

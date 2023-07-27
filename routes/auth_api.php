@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [RegisteredUserController::class, 'store']);
 Route::post('login', [AuthenticatedSessionController::class, 'login_api']);
 
-
-
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get("/logout",[AuthenticatedSessionController::class,"logout_api"])->middleware("verified");

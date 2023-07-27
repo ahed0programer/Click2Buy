@@ -14,7 +14,6 @@ class rowProductResource extends JsonResource
             'id' => $this->id,
             'row_name' => $this->title,
             'product' => $this->get_product($this->id),
-
         ];
     }
 }
