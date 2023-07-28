@@ -140,6 +140,9 @@ class ProductController extends Controller
 
     public function edit_product(Request $request, $id)
     {
+
+       
+
         if (empty(Brand::where('name', $request->brand)->first())) {
             Brand::create([
                 'name' => $request->brand,
@@ -150,7 +153,7 @@ class ProductController extends Controller
                 'value' => $request->offer,
             ]);
         }
-
+        
         $category_id = Category::where('id', $request->category_id)->first()->id;
         $brand_id = Brand::where('name', $request->brand)->first()->id;
         $offer_id = Offer::where('value', $request->offer)->first()->id;
@@ -164,10 +167,14 @@ class ProductController extends Controller
             'status' => $request->status
         ]);
 
-        $colors = explode(',', $request->input('colors'));
-        $materials = explode(',', $request->input('materials'));
-        $sizes = $request->input('sizes');
+        // this part is stopped currently
+        // fadious 
+        // هاض كود تبع ال الالوان والمادة والصور مو شغال حاليا
+        // $colors = explode(',', $request->input('colors'));
+        // $materials = explode(',', $request->input('materials'));
+        // $sizes = $request->input('sizes');
 
+        
         // $color_ids = [];
         // foreach ($colors as $color) {
         //     $colour = Colour::firstOrCreate(['name' => $color]);
@@ -187,41 +194,43 @@ class ProductController extends Controller
         // }
 
         // Create a new inventory record
-        foreach ($colors as $color) {
-            $color_model = Colour::where('name', $color)->first();
-            if (empty($color_model)) {
-                $color_model = Colour::create(['name' => $color]);
-            }
+        
+        // foreach ($colors as $color) {
+        //     $color_model = Colour::where('name', $color)->first();
+        //     if (empty($color_model)) {
+        //         $color_model = Colour::create(['name' => $color]);
+        //     }
 
-            foreach ($materials as $material) {
-                $material_model = Material::where('name', $material)->first();
-                if (empty($material_model)) {
-                    $material_model = Material::create(['name' => $material]);
-                }
+        //     foreach ($materials as $material) {
+        //         $material_model = Material::where('name', $material)->first();
+        //         if (empty($material_model)) {
+        //             $material_model = Material::create(['name' => $material]);
+        //         }
 
-                foreach ($sizes as $size) {
-                    $size_model = Size::where('size', $size)->first();
-                    Inventory::where('product_id', $id)->update([
-                        'product_id' => $id,
-                        'colour_id' => $color_model->id,
-                        'material_id' => $material_model->id,
-                        'size_id' => $size_model->id,
-                        'price' => 20,
-                        'quantity' => 20
-                    ]);
-                }
-            }
-        }
+        //         foreach ($sizes as $size) {
+        //             $size_model = Size::where('size', $size)->first();
+        //             Inventory::where('product_id', $id)->update([
+        //                 'product_id' => $id,
+        //                 'colour_id' => $color_model->id,
+        //                 'material_id' => $material_model->id,
+        //                 'size_id' => $size_model->id,
+        //                 'price' => 20,
+        //                 'quantity' => 20
+        //             ]);
+        //         }
+        //     }
+        // }
 
-        if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('public/photos_product');
-                photoProduct::where('product_id', $id)->update([
-                    'photo' => $path,
-                    'product_id' => $id,
-                ]);
-            }
-        }
+
+        // if ($request->hasFile('photos')) {
+        //     foreach ($request->file('photos') as $photo) {
+        //         $path = $photo->store('public/photos_product');
+        //         photoProduct::where('product_id', $id)->update([
+        //             'photo' => $path,
+        //             'product_id' => $id,
+        //         ]);
+        //     }
+        // }
 
         if ($request->row_id) {
             if ($request->row_id != 'none') {
@@ -241,7 +250,9 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->back();
+        return response()->json([
+            "message"=>"it's been updated successfully"
+        ]);
     }
 
 
@@ -289,7 +300,7 @@ class ProductController extends Controller
 
         $size_model = Size::where('size', $request->option["size"])->first();
 
-        Inventory::create([
+         $new_inventory=Inventory::create([
             'product_id' => $id,
             'colour_id' => $color_model->id,
             'material_id' => $material_model->id,
@@ -299,7 +310,8 @@ class ProductController extends Controller
         ]);
 
         return response()->json([
-            "message"=>json_encode($request->option)
+            "message"=>json_encode($request->option),
+            "id"=>$new_inventory->id
         ]);
     }
 

@@ -53,6 +53,21 @@
             font-size: 1.5em;
         }
 
+        .input-quantity{
+            appearance: none;
+            background-color: #4b385a;
+            border-color: #fff;
+            border-width: 1px;
+            border-radius: 20px;
+            padding-top: 0.5rem;
+            padding-right: 0.75rem;
+            padding-bottom: 0.5rem;
+            padding-left: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            --tw-shadow: 0 0 #0000;
+        }
+
         img,
         p,
         a {
@@ -562,7 +577,7 @@
                             <div class="main-content">
                                 <div>
                                     <div class="new-post-form product">
-                                        <form class="new-product-form" action="{{ route('editProduct', $product->id) }}"
+                                        <form id="update_p" class="new-product-form" action="{{ route('editProduct', $product->id) }}"
                                             method="post" enctype="multipart/form-data">
                                             @csrf
                                             @method('POST')
@@ -598,10 +613,6 @@
                                                     style="max-width: 100%;border-radius: 8px;"
                                                     value="{{ $product->titel }}">
                                             </div>
-
-
-
-
 
                                             <div class="form-field field-4 medium"
                                                 style="background-color: #2e3847;
@@ -737,7 +748,7 @@
                                                     @endforeach
                                                 </div>
 
-                                                <div><button type="button" id="generate" onclick="generatePossibilities()" >Generate Possibilities</button></div>
+                                                <div><button type="button" id="generate" onclick="generatePossibilities()" class="button" >Generate Possibilities</button></div>
                                                 <br><br>
                                                 <table id="possibilities-table" for="possibilities">
                                                     <thead>
@@ -750,24 +761,20 @@
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
+                                                    <tbody id="first_body">
                                                         @foreach ($productsInventory as $inventory)
                                                             <tr>
                                                                 <th>{{$inventory->colour}}</th>
                                                                 <th>{{$inventory->material}}</th>
                                                                 <th>{{$inventory->size}}</th>
-                                                                <th>{{$inventory->price}}</th>
-                                                                <th>{{$inventory->quantity}}</th>
+                                                                <th><input class="input-quantity" type="number" value="{{$inventory->price}}"></th>
+                                                                <th><input class="input-quantity" type="number" value="{{$inventory->quantity}}"></th>
                                                                 <th><button type="button" onclick="delete_inventory({{$inventory->id}})"> <img src="{{asset('image/delete.png')}}" alt="delete" style="width:20px"></button></th>
-                                                                {{-- <div class="hover-image">
-                                                                    <img src="{{asset("image/plus.png")}}" alt="">
-                                                                </div>  --}}
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
                                                     <input id="asset_path" type="hidden" value="{{asset("/")}}">
                                                     <tbody id="second_body" style="background-color: #277929">
-
                                                     </tbody>                           
                                                 </table>
                                                 <div class="hover-image">
@@ -830,7 +837,7 @@
                                             </div>
 
                                             <div>
-                                                <button type="button" onclick="saveProduct()" class="button add">Save</button>
+                                                <button type="submit" id="submit" class="button add">Save</button>
                                             </div>
                                         </form>
                                     </div>
@@ -896,7 +903,6 @@
     });
 </script>
 
-
 <script>
     function previewImages() {
         var preview = document.querySelector('#preview');
@@ -931,11 +937,28 @@
     });
 </script>
 
+{{-- generateing posipilities script  , Your UNCLE AHED-ooof--}}
 <script>
     var possibilities = [];
     var assets_path = document.getElementById("asset_path").value;
     const selections = document.getElementById('selections')
     //var taken_options = {{json_encode($productsInventory)}}
+
+    function check_if_option_not_taken(option){
+        var table = document.getElementById('first_body');
+        let R =true;
+        for (let index = 0; index < table.rows.length; index++) {
+            if(
+            table.rows[index].cells[0].innerHTML == option.color &&
+            table.rows[index].cells[1].innerHTML == option.material &&
+            table.rows[index].cells[2].innerHTML == option.size
+            ){
+                R=false
+                break;
+            }
+        }
+        return R;
+    }
 
     function generatePossibilities() {
         // Get user input
@@ -968,7 +991,7 @@
                            existingPossibility.size === possibility.size;
                    });
        
-                   if (!exists) {
+                   if (!exists && check_if_option_not_taken(possibility)) {
                        possibilities.push(possibility);
                    }
                }
@@ -1049,7 +1072,7 @@
         var formData = new FormData($(".new-product-form")[0]);
 
         // أضف المصفوفة المتولدة إلى بيان البيانات
-        formData.append("possibilities", JSON.stringify(possibilities));
+        //formData.append("possibilities", JSON.stringify(possibilities));
 
         // إرسال طلب HTTP POST باستخدام AJAX
         $.ajax({
@@ -1068,9 +1091,50 @@
     }
 </script>
 
-
-
+{{--  save product script    , Your UNCLE AHED-ooof --}}
 <script>
+    // Assuming you have a form with id "myForm" and an array called "dataArray"
+    const form = document.getElementById('update_p');
+    
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent default form submission
+    
+      const formData = new FormData(form); // Get form data
+    
+      // Append array data to form data
+      formData.append('possibilities', JSON.stringify(possibilities));
+    
+     // Get reference to the submit button
+     const submitButton = document.getElementById('submit');
+     
+     // Update button text to "Loading" on form submission
+     submitButton.innerText = 'Loading...';
+     
+     // Send AJAX request
+     fetch('{{route("editProduct",$product->id)}}', {
+       method: 'POST',
+       body: formData,
+     })
+       .then(response => response.json())
+       .then(data => {
+         // Handle the response from the server
+         alert(data.message);
+     
+         // Revert button text after receiving response
+         submitButton.innerText = 'Save';
+       })
+       .catch(error => {
+         // Handle any errors
+         alert(error);
+     
+         // Revert button text on error
+         submitButton.innerText = 'Save';
+       });
+     });
+</script>
+ 
+ {{-- inventory operations script  , Your UNCLE AHED-ooof --}}
+ <script>
     function delete_inventory(id){
         // Send AJAX request
         fetch('{{asset("/deleteInventory/")}}'+'/'+id, {
@@ -1086,7 +1150,6 @@
             alert(error);
         });
     }
-
    function add_inventory(index){
         var row = document.getElementById("row"+index)
         // Send AJAX request
@@ -1102,6 +1165,25 @@
             .then(data => {
                 // Handle the response from the server
                 alert(data.message);
+                var table = document.getElementById('first_body');
+                var possibility_row = document.getElementById('row'+index);
+                    possibility_row.remove(possibility_row)
+                var possibility = possibilities[index];
+                var row = table.insertRow();
+                row.style.color="white";
+                var colorCell = row.insertCell(0);
+                var materialCell = row.insertCell(1);
+                var sizeCell = row.insertCell(2);
+                var priceCell = row.insertCell(3);
+                var quantityCell = row.insertCell(4);
+                var actionCell = row.insertCell(5);
+                colorCell.innerHTML = possibility.color;
+                materialCell.innerHTML = possibility.material;
+                sizeCell.innerHTML = possibility.size;
+                priceCell.innerHTML="<input type='number' value='"+possibility.price+"'>";
+                quantityCell.innerHTML="<input type='number' value='"+possibility.quantity+"'>";
+                actionCell.innerHTML = "<button type='button' onclick='delete_inventory("+ data.id +")'><img src='"+assets_path+"image/delete.png' style='width:20px' alt='Remove'></button>";
+
             })
             .catch(error => {
                 // Handle any errors
