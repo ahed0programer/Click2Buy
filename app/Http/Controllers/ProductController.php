@@ -141,8 +141,6 @@ class ProductController extends Controller
     public function edit_product(Request $request, $id)
     {
 
-       
-
         if (empty(Brand::where('name', $request->brand)->first())) {
             Brand::create([
                 'name' => $request->brand,
@@ -267,6 +265,25 @@ class ProductController extends Controller
         // // return $product;
 
         // return view('dashboard', compact('product'));
+    }
+
+    public function update_inventory(Request $request,$id){
+
+        return response()->json([
+            "message"=>"inventory has been".$request->price." updated successfuly"
+        ]);
+
+        $option =Inventory::where('id',$id)->first();
+        $option->update([
+            'price'=>$request->price,
+            'quantity'=>$request->quantity
+        ]);
+
+        return response()->json([
+            "message"=>"inventory has been updated successfuly"
+        ]);
+
+
     }
 
     public function delete_inventory($id){

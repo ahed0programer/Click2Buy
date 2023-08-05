@@ -32,6 +32,7 @@ Route::post('editProduct/{id}', [ProductController::class, "edit_product"])->nam
 
 Route::get('deleteInventory/{id}',[ProductController::class, "delete_inventory"])->name('deleteInventory');
 Route::post('addInventory-To-Product/{id}',[ProductController::class, "add_inventory"])->name('addInventory');
+Route::post('updateInventory-Of-Product/{id}',[ProductController::class, "update_inventory"])->name('update_inventory');
 
 //category
 Route::get('showcategory', [CategoryController::class, "showcategory"])->name('showcategory');

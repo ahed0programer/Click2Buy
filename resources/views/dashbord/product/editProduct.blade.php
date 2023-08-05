@@ -763,13 +763,14 @@
                                                     </thead>
                                                     <tbody id="first_body">
                                                         @foreach ($productsInventory as $inventory)
-                                                            <tr>
+                                                            <tr id="inventory_{{$inventory->id}}">
                                                                 <th>{{$inventory->colour}}</th>
                                                                 <th>{{$inventory->material}}</th>
                                                                 <th>{{$inventory->size}}</th>
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->price}}"></th>
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->quantity}}"></th>
-                                                                <th><button type="button" onclick="delete_inventory({{$inventory->id}})"> <img src="{{asset('image/delete.png')}}" alt="delete" style="width:20px"></button></th>
+                                                                <th><button type="button" onclick="delete_inventory({{$inventory->id}})"> <img src="{{asset('image/delete.png')}}" alt="delete" style="width:20px"></button>
+                                                                    <button type="button" onclick="update_inventory({{$inventory->id}})"> <img src="{{asset('image/edit.png')}}" alt="delete" style="width:20px"></button></th>
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
@@ -1150,7 +1151,8 @@
             alert(error);
         });
     }
-   function add_inventory(index){
+    function add_inventory(index){
+
         var row = document.getElementById("row"+index)
         // Send AJAX request
         fetch('{{asset("/addInventory-To-Product/")}}'+'/'+"{{$product->id}}", {
@@ -1189,6 +1191,43 @@
                 // Handle any errors
                 alert(error);
             });
+    }
+    //
+    function update_inventory(id) {
+    // Send AJAX request
+    var trElement = document.getElementById("inventory_"+id);
+    var inputElements = trElement.getElementsByTagName("input");
+    
+    // Access the values of input elements
+    var price = inputElements[0].value;
+    var quantity = inputElements[1].value;
+
+    formData =new FormData();
+    // Image_file = $('#image')[0].files[0];
+
+    //formData.append('image',Image_file);
+    formData.append('price',price);
+    formData.append('quantity',quantity);
+
+
+    fetch('{{asset("/updateInventory-Of-Product/")}}'+'/'+id, {
+        method: 'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'X-CSRF-TOKEN':'{{csrf_token()}}'
+        },
+        body:formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server
+            alert(data.message)
+        })
+        .catch(error => {
+            // Handle any errors
+            alert(error);
+        });
+    
     }
 
 </script>
