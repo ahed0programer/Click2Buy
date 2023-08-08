@@ -66,6 +66,7 @@
             font-size: 1rem;
             line-height: 1.5rem;
             --tw-shadow: 0 0 #0000;
+            width: 100%;
         }
 
         img,
@@ -756,6 +757,7 @@
                                                             <th>Color</th>
                                                             <th>Material</th>
                                                             <th>Size</th>
+                                                            <th>Image</th>
                                                             <th>Price</th>
                                                             <th>Quantity</th>
                                                             <th>Action</th>
@@ -767,6 +769,7 @@
                                                                 <th>{{$inventory->colour}}</th>
                                                                 <th>{{$inventory->material}}</th>
                                                                 <th>{{$inventory->size}}</th>
+                                                                <th><img src="{{asset('image/delete.png')}}" alt="not avalible" style="width:150px"><input type="file"></th>
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->price}}"></th>
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->quantity}}"></th>
                                                                 <th><button type="button" onclick="delete_inventory({{$inventory->id}})"> <img src="{{asset('image/delete.png')}}" alt="delete" style="width:20px"></button>
@@ -1012,12 +1015,14 @@
             var colorCell = row.insertCell(0);
             var materialCell = row.insertCell(1);
             var sizeCell = row.insertCell(2);
-            var priceCell = row.insertCell(3);
-            var quantityCell = row.insertCell(4);
-            var actionCell = row.insertCell(5);
+            var imageCell = row.insertCell(3);
+            var priceCell = row.insertCell(4);
+            var quantityCell = row.insertCell(5);
+            var actionCell = row.insertCell(6);
             colorCell.innerHTML = possibility.color;
             materialCell.innerHTML = possibility.material;
             sizeCell.innerHTML = possibility.size;
+            imageCell,innerHTML="<input type='file'>";
             priceCell.innerHTML = "<input type='number' min='0' value='0' onchange='updatePrice(" + i +
                 ", this.value)'>";
             quantityCell.innerHTML = "<input type='number' min='0' value='0' onchange='updateQuantity(" + i +
@@ -1151,6 +1156,7 @@
             alert(error);
         });
     }
+
     function add_inventory(index){
 
         var row = document.getElementById("row"+index)
@@ -1192,44 +1198,42 @@
                 alert(error);
             });
     }
-    //
+
     function update_inventory(id) {
-    // Send AJAX request
-    var trElement = document.getElementById("inventory_"+id);
-    var inputElements = trElement.getElementsByTagName("input");
-    
-    // Access the values of input elements
-    var price = inputElements[0].value;
-    var quantity = inputElements[1].value;
+        // Send AJAX request
+        var trElement = document.getElementById("inventory_"+id);
+        var inputElements = trElement.getElementsByTagName("input");
 
-    formData =new FormData();
-    // Image_file = $('#image')[0].files[0];
+        // Access the values of input elements
+        var price = inputElements[0].value;
+        var quantity = inputElements[1].value;
 
-    //formData.append('image',Image_file);
-    formData.append('price',price);
-    formData.append('quantity',quantity);
+        formData =new FormData();
+        // Image_file = $('#image')[0].files[0];
+
+        alert("q "+quantity +" p "+price)
+        //formData.append('image',Image_file);
+        formData.append('price',price);
+        formData.append('quantity',quantity);
 
 
-    fetch('{{asset("/updateInventory-Of-Product/")}}'+'/'+id, {
-        method: 'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'X-CSRF-TOKEN':'{{csrf_token()}}'
-        },
-        body:formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response from the server
-            alert(data.message)
-        })
-        .catch(error => {
-            // Handle any errors
-            alert(error);
-        });
-    
+        fetch('{{asset("/updateInventory-Of-Product/")}}'+'/'+id, {
+            method: 'POST',
+            headers:{
+                'X-CSRF-TOKEN':'{{csrf_token()}}'
+            },
+            body:formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server
+                alert(data.message)
+            })
+            .catch(error => {
+                // Handle any errors
+                alert(error);
+            });
     }
-
 </script>
 
 

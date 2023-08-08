@@ -310,6 +310,12 @@
             bottom: -271px;
             width: 100%;
         }
+
+        #notification-counter {
+            float: right;
+            margin-right: 29px;
+            margin-top: -37px;
+        }
     </style>
 </head>
 
@@ -323,12 +329,19 @@
                 </li>
 
                 <li class="active"
+                    style="box-shadow: white 3px 3px 6px;width: 85%;margin-reight: auto;margin-top: 20px;">
+                    <a href="{{ route('show_order') }}">Order</a>
+                    <span id="notification-counter">0</span>
+                </li>
+
+                <li class="active"
                     style="box-shadow: white 3px 3px 6px;width: 85%;margin-reight: auto;margin-top: 20px;"><a
                         href="{{ route('showrows') }}">Row Home Page</a></li>
 
                 <li class="active"
                     style="box-shadow: white 3px 3px 6px;width: 85%;margin-reight: auto;margin-top: 20px;">
-                    <a>Category</a></li>
+                    <a>Category</a>
+                </li>
 
                 <li class="active" style="box-shadow: white 3px 3px 6px;width: 75%;margin-reight: auto;"><a
                         href="{{ route('showcategory') }}">Show Category</a></li>
@@ -380,7 +393,8 @@
                                     <button class="">
                                         <i class="fa fa-trash"></i>
                                         <a href="{{ route('softDeleteProduct', $prod->id) }}"><img
-                                                src="{{asset("image/delete.png")}}" alt="delete" style="width:30px"></a>
+                                                src="{{ asset('image/delete.png') }}" alt="delete"
+                                                style="width:30px"></a>
                                     </button>
                                 </td>
                             </tr>
@@ -431,6 +445,28 @@
         </footer>
     </div>
 
+    <script>
+        // استدعاء العنصر الذي تم إنشاؤه
+        const counter = document.getElementById("notification-counter");
+
+        // زيادة العداد الرقمي بمقدار 1 عند وصول الإشعار
+        function increaseCounter() {
+            let count = parseInt(counter.innerHTML);
+            count += 1;
+            counter.innerHTML = count.toString();
+        }
+
+        // ربط العداد الرقمي بالإشعارات
+        // يتم استدعاء increaseCounter() عند وصول الإشعار
+        // يتم استخدام setTimeout() لإضافة تأخير إلى زيادة العداد الرقمي
+        // يمكن تغيير وقت الانتظار حسب متطلبات المشروع
+        $(document).ready(function() {
+            // استدعاء increaseCounter() بعد 5 ثوانٍ
+            setTimeout(function() {
+                increaseCounter();
+            }, 5000);
+        });
+    </script>
 </body>
 
 </html>

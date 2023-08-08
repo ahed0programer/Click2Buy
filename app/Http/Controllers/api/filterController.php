@@ -32,35 +32,48 @@ class filterController extends Controller
         ]);
     }
 
-    public function get_filter(Request $request)
+    public function search_filter(Request $request)
     {
 
         $product_query = Product::with(['category', 'brand', 'sizes', 'colours', 'Materials']);
-        if ($request->category) {
+
+        if($request->text && $request->text != 'null' && $request->text != 'men'){
+            $product_query->where('titel', 'like', '%'.$request->text.'%')
+            ->orWhere('descraption', 'like', '%'.$request->text.'%');
+            
+        }
+
+        if($request->text && $request->text != 'null' && $request->text == 'men'){
+            $product_query->where('descraption', 'REGEXP', '[[:<:]]' . 'men' . '[[:>:]]')
+            ->orWhere('titel', 'REGEXP', '[[:<:]]' . 'men' . '[[:>:]]');
+        }
+
+
+        if ($request->category && $request->category != 'null') {
             $product_query->whereHas('category', function ($query) use ($request) {
                 $query->where('name', $request->category);
             });
         }
 
-        if ($request->brand) {
+        if ($request->brand && $request->brand != 'null') {
             $product_query->whereHas('brand', function ($query) use ($request) {
                 $query->where('name', $request->brand);
             });
         }
 
-        if ($request->colour) {
+        if ($request->colour && $request->colour != 'null') {
             $product_query->whereHas('colours', function ($query) use ($request) {
                 $query->where('name', $request->colour);
             });
         }
 
-        if ($request->size) {
+        if ($request->size && $request->size != 'null') {
             $product_query->whereHas('sizes', function ($query) use ($request) {
                 $query->where('size', $request->size);
             });
         }
 
-        if ($request->material) {
+        if ($request->material && $request->material != 'null') {
             $product_query->whereHas('Materials', function ($query) use ($request) {
                 $query->where('name', $request->material);
             });

@@ -12,7 +12,7 @@ class EvaluationController extends Controller
 {
     public function add_evaluation(Request $request, $product_id)
     {
-        if (empty(Evaluation::where('user_id', auth::User()->id)->first())) {
+        if (empty(Evaluation::where('user_id', auth::User()->id)->where('product_id' , $product_id)->first())) {
             Evaluation::create([
                 'user_id' => auth::User()->id,
                 'product_id' => $product_id,
@@ -26,13 +26,13 @@ class EvaluationController extends Controller
 
             // $product = Product::where('id', $product_id)->first();
             return response()->json([
-                "status" => 1,
+                "status" => "true",
                 'message' => 'evaluation added',
                 // 'product' => showproductResource::collection($product),
             ], 200);
         }
         return response()->json([
-            "status" => 0,
+            "status" => "false",
             'message' => 'you cant evaluation more than once',
         ], 301);
 
@@ -55,7 +55,7 @@ class EvaluationController extends Controller
         
 
         return response()->json([
-            "status" => 1,
+            "status" => "true",
             'message' => 'evaluation edit',
             // 'product' => showproductResource::collection($product),
         ], 200);
@@ -75,7 +75,7 @@ class EvaluationController extends Controller
         // $product_id = Evaluation::where('id', $evaluation_id)->first();
         // $product = Product::where('id', $product_id)->first();
         return response()->json([
-            "status" => 1,
+            "status" => "true",
             'message' => 'evaluation deleted',
             // 'product' => showproductResource::collection($product),
         ], 200);

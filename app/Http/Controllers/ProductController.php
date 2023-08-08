@@ -91,7 +91,7 @@ class ProductController extends Controller
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('public/photos_product');
+                $path = $photo->store('photos_product');//تم تعديل المسار من خلال مسح public
                 photoProduct::create([
                     'photo' => $path,
                     'product_id' => $product->id,
@@ -140,6 +140,8 @@ class ProductController extends Controller
 
     public function edit_product(Request $request, $id)
     {
+
+       
 
         if (empty(Brand::where('name', $request->brand)->first())) {
             Brand::create([
@@ -257,33 +259,12 @@ class ProductController extends Controller
     public function show_product()
     {
         $product = Product::latest()->paginate(10);
-        // $photo = photoProduct::whereIn('parent_id' , $product->id)->first();
-        // return $photo;
+
+        // foreach ($product as $products) {
+        // $photo = photoProduct::where('product_id' , $products->id)->first();
+
+        // }
         return view('dashbord/product/dashboard', compact('product'));
-        // $products = Product::latest()->paginate(10);
-        // $product =  showproductResource::collection($products);
-        // // return $product;
-
-        // return view('dashboard', compact('product'));
-    }
-
-    public function update_inventory(Request $request,$id){
-
-        return response()->json([
-            "message"=>"inventory has been".$request->price." updated successfuly"
-        ]);
-
-        $option =Inventory::where('id',$id)->first();
-        $option->update([
-            'price'=>$request->price,
-            'quantity'=>$request->quantity
-        ]);
-
-        return response()->json([
-            "message"=>"inventory has been updated successfuly"
-        ]);
-
-
     }
 
     public function delete_inventory($id){
@@ -331,6 +312,20 @@ class ProductController extends Controller
             "id"=>$new_inventory->id
         ]);
     }
+
+    public function update_inventory(Request $request,$id){
+
+        $option =Inventory::where('id',$id)->first();
+        $option->update([
+            'price'=>$request->price,
+            'quantity'=>$request->quantity
+        ]);
+
+        return response()->json([
+            "message"=>"inventory has been updated successfuly"
+        ]);
+    }
+
 
     public function softDelete($id)
     {

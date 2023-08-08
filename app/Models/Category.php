@@ -65,4 +65,12 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+
+    public function getNumberOfChildren($id)
+    {
+        $category = Category::find($id);
+        $descendants = $category->descendants()->count();
+        return $descendants;
+    }
 }

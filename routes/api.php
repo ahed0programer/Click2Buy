@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\api\deliveryCompanyController;
 use App\Http\Controllers\api\detailsProductController;
 use App\Http\Controllers\api\filterController;
+use App\Http\Controllers\api\orderController;
 use App\Http\Controllers\api\productCategoryController;
 use App\Http\Controllers\api\productHomeController;
 use App\Http\Controllers\api\serchController;
+use App\Http\Controllers\api\userController;
+use App\Http\Controllers\api\wishListController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CategoryController;
@@ -15,6 +19,7 @@ use App\Http\Controllers\OtpController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\superAdminController;
+use App\Models\wishList;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -66,16 +71,14 @@ Route::get('details_product/{id}', [detailsProductController::class, "details_pr
 // Route::post('add_size', [superAdminController::class, "add_size"]);
 
 
-
-
-//serch
-Route::get('serch', [serchController::class, "serch"]);
-
-
 //filter
 Route::get('filter_elements', [filterController::class, "filter_elements"]);
-Route::get('get_filter', [filterController::class, "get_filter"]);
+Route::get('search_filter', [filterController::class, "search_filter"]);
 
+
+//deliveryCompany
+Route::get('deliveryCompany', [deliveryCompanyController::class, "deliveryCompany"]);
+Route::get('deliveryCompanyaddress/{id}', [deliveryCompanyController::class, "deliveryCompanyaddress"]);
 
 
 // group middleware
@@ -96,6 +99,25 @@ Route::middleware(['auth:sanctum','verified'])->group(function () {
 
     //profile
     Route::get('profile', [ProfileController::class, "profile"]);
+
+    //order
+    Route::get('order_user', [orderController::class, "order_user"]);
+    Route::post('add_order', [orderController::class, "add_order"]);
+    Route::post('update_order/{id}', [orderController::class, "update_order"]);
+
+
+    //wishList
+    Route::get('show_wish_list', [wishListController::class, "show_wish_list"]);
+    Route::post('add_wish_list/{product_id}', [wishListController::class, "add_wish_list"]);
+    Route::delete('delete_wish_list/{wish_list_id}', [wishListController::class, "delete_wish_list"]);
+
+
+    //user
+    Route::post('edit_name_phone', [userController::class, "edit_name_phone"]);
+    Route::post('edit_password', [userController::class, "edit_password"]);
+    Route::get('check_password', [userController::class, "check_password"]);
+
+
 
 }); //end group middleware
 

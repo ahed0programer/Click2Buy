@@ -22,7 +22,6 @@ class Product extends Model
         'offer_id',
         'category_id',
         'evaluation',
-        'stock',
         'status',
     ];
 
@@ -33,10 +32,24 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+
+    public function wishlist()
+    {
+        return $this->belongsToMany(wishList::class, 'wish_lists');
+    }
+    
+
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
     }
+
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class);
+    }
+
 
     public function sizes()
     {
@@ -47,6 +60,8 @@ class Product extends Model
     {
         return $this->belongsToMany(Colour::class, 'inventories')->withPivot('size_id', 'material_id', 'quantity');
     }
+
+    
 
 
     public function Materials()
@@ -98,7 +113,7 @@ class Product extends Model
             ->join('colours', 'inventories.colour_id', '=', 'colours.id')
             ->join('materials', 'inventories.material_id', '=', 'materials.id')
             ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
-            ->select('colours.name as colour', 'materials.name as material', 'sizes.size as size', 'quantity', 'price')
+            ->select('inventories.id as inventory_id', 'colours.name as colour', 'materials.name as material', 'sizes.size as size', 'quantity', 'price')
             ->get();
         return $inventories;
     }
@@ -113,11 +128,21 @@ class Product extends Model
     {
         $comments = Comment::where('comments.product_id', $product_id)
             ->join('users', 'comments.user_id', '=', 'users.id')
-            ->join('evaluations', function ($join) {
+            ->leftJoin('evaluations', function ($join) {
                 $join->on('evaluations.user_id', '=', 'comments.user_id')
                     ->on('evaluations.product_id', '=', 'comments.product_id');
             })
             ->select('comments.id as comment_id', 'users.name as user_name', 'comments.text', 'evaluations.id as rating_id', 'evaluations.evaluation as rating')
+            ->union(
+                Evaluation::where('evaluations.product_id', $product_id)
+                    ->join('users', 'evaluations.user_id', '=', 'users.id')
+                    ->leftJoin('comments', function ($join) {
+                        $join->on('comments.user_id', '=', 'evaluations.user_id')
+                            ->on('comments.product_id', '=', 'evaluations.product_id');
+                    })
+                    ->whereNull('comments.id')
+                    ->select('evaluations.id as comment_id', 'users.name as user_name', DB::raw('"" as text'), 'evaluations.id as rating_id', 'evaluations.evaluation as rating')
+            )
             ->get();
 
         return $comments;

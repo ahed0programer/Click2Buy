@@ -25,7 +25,7 @@ class showproductResource extends JsonResource
             'ratings_and_comments' => $this->getComment($this->id),
             'evaluation' => $this->getEvaluation($this->id),
             'photos' => $this->getPhoto($this->id),
-
+            'created_at' => $this->created_at,
         
         ];
     }

@@ -12,7 +12,7 @@ class CommentController extends Controller
 {
     public function add_comment(Request $request, $product_id)
     {
-        if (empty(Comment::where('user_id', auth::User()->id)->first())) {
+        if (empty(Comment::where('user_id', auth::User()->id)->where('product_id' , $product_id)->first())) {
 
             Comment::create([
                 'user_id' => auth::User()->id,
@@ -26,14 +26,14 @@ class CommentController extends Controller
 
 
             return response()->json([
-                "status" => 1,
+                "status" => "true",
                 'message' => 'comment added',
                 // 'product' => showproductResource::collection($product),
             ], 200);
         }
         return response()->json([
-            "status" => 0,
-            'message' => 'you cant cooment more than once',
+            "status" => "false",
+            'message' => 'you cant comment more than once',
         ], 301);
     }
 
@@ -48,7 +48,7 @@ class CommentController extends Controller
         // $product_id = Comment::where('id', $comment_id)->first()->product_id;
         // $product = Product::where('id', $product_id)->first();
         return response()->json([
-            "status" => 1,
+            "status" => "true",
             'message' => 'comment edit',
             // 'product' => showproductResource::collection($product),
         ], 200);
@@ -63,7 +63,7 @@ class CommentController extends Controller
         // $product_id = Comment::where('id', $comment_id)->first()->product_id;
         // $product = Product::where('id', $product_id)->first();
         return response()->json([
-            "status" => 1,
+            "status" => "true",
             'message' => 'comment deleted',
             // 'product' => showproductResource::collection($product),
         ], 200);

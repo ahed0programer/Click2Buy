@@ -91,7 +91,7 @@ class OtpController extends Controller
             return response()->json([
                 "status"=>false,
                 "message"=>__("incorrect email !!"),
-            ],404);
+            ]);
         }
 
         $code=$otp->generate($user->id,5,3);
@@ -118,7 +118,7 @@ class OtpController extends Controller
             return response()->json([
                 "status"=>false,
                 "message"=>"the email is incorrect",
-            ],404);
+            ],401);
         }
         
         $check = $otp->validate($user->id , $request->code);
@@ -138,7 +138,7 @@ class OtpController extends Controller
                 "status"=>false,
                 "message"=>"incorrect OTP code",
                 "OTP"=>$check
-            ],422);
+            ]);
         }
 
     }

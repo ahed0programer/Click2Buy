@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('evaluations', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unique()->nullable();
+            $table->integer('user_id')->nullable();
             $table->enum('evaluation', ['1' ,'2' , '3' , '4' , '5'])->nullable();
             $table->integer('product_id')->nullable();
             $table->softDeletes();

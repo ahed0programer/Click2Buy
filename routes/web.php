@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\orderwebController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RowController;
@@ -53,6 +54,13 @@ Route::get('show_size', [sizeController::class, "show_size"])->name('show_size')
 Route::post('create_size', [sizeController::class, "create_size"])->name('create_size');
 Route::post('edit_size/{id}', [sizeController::class, "edit_size"])->name('edit_size');
 Route::get('soft_delete_size/{id}', [sizeController::class, "soft_delete_size"])->name('soft_delete_size');
+
+
+//order
+Route::get('show_order', [orderwebController::class, "show_order"])->name('show_order');
+Route::get('show_status_order/{status}', [orderwebController::class, "show_status_order"])->name('show_status_order');
+Route::get('details_order/{id}', [orderwebController::class, "details_order"])->name('details_order');
+Route::get('processing_order/{id}', [orderwebController::class, "processing_order"])->name('processing_order');
 
 }); //end group middleware
 
