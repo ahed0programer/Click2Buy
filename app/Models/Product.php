@@ -21,6 +21,7 @@ class Product extends Model
         'brand_id',
         'offer_id',
         'category_id',
+        'price',
         'evaluation',
         'status',
     ];

@@ -15,6 +15,7 @@ use App\Models\productRow;
 use App\Models\Row;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -61,6 +62,7 @@ class ProductController extends Controller
             'brand_id' => $brand_id,
             'offer_id' => $offer_id,
             'category_id' => $category_id,
+            'price' => $request->price,
             'status' => $request->status
         ]);
 
@@ -84,6 +86,7 @@ class ProductController extends Controller
                 'colour_id' => $color_model->id,
                 'material_id' => $material_model->id,
                 'size_id' => $size_model->id,
+                'image'=>'not found',
                 'price' => $possibility->price,
                 'quantity' => $possibility->quantity
             ]);
@@ -125,7 +128,7 @@ class ProductController extends Controller
             ->join('colours', 'inventories.colour_id', '=', 'colours.id')
             ->join('materials', 'inventories.material_id', '=', 'materials.id')
             ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
-            ->select('inventories.id as id','colours.name as colour', 'materials.name as material', 'sizes.size as size','size_id','colour_id','material_id', 'quantity', 'price')
+            ->select('inventories.id as id','colours.name as colour', 'materials.name as material', 'sizes.size as size','size_id','colour_id','material_id','image', 'quantity', 'price')
             ->get();
 
         $colourIds = $productsInventory->pluck('colour_id');
@@ -287,24 +290,33 @@ class ProductController extends Controller
 
     public function add_inventory(Request $request,$id){
 
-        $color_model = Colour::where('name', $request->option["color"])->first();
+        $option = json_decode($request->option);
+
+        $color_model = Colour::where('name', $option->color)->first();
         if (empty($color_model)) {
-            $color_model = Colour::create(['name' => $request->option["color"]]);
+            $color_model = Colour::create(['name' => $option->color]);
         }
-        $material_model = Material::where('name', $request->option["material"])->first();
+        $material_model = Material::where('name', $option->material)->first();
         if (empty($material_model)) {
-            $material_model = Material::create(['name' => $request->option["material"]]);
+            $material_model = Material::create(['name' => $option->material]);
         }
 
-        $size_model = Size::where('size', $request->option["size"])->first();
+        $size_model = Size::where('size', $option->size)->first();
+        
+        $path="not found";
+        if($request->hasFile('image'))
+        {
+            $path = $request->file('image')->store('inventories_photos','public');//تم تعديل المسار من خلال مسح public
+        }
 
          $new_inventory=Inventory::create([
             'product_id' => $id,
             'colour_id' => $color_model->id,
             'material_id' => $material_model->id,
             'size_id' => $size_model->id,
-            'price' => $request->option["price"],
-            'quantity' => $request->option["quantity"]
+            'image'=>$path,
+            'price' => $option->price,
+            'quantity' => $option->quantity
         ]);
 
         return response()->json([
@@ -315,18 +327,22 @@ class ProductController extends Controller
 
     public function update_inventory(Request $request,$id){
 
+        if($request->hasFile('image'))
+        {
+            $path = $request->file('image')->store('inventories_photos','public');//تم تعديل المسار من خلال مسح public
+        }
+
         $option =Inventory::where('id',$id)->first();
         $option->update([
             'price'=>$request->price,
-            'quantity'=>$request->quantity
+            'quantity'=>$request->quantity,
+            'image'=>$path
         ]);
 
         return response()->json([
             "message"=>"inventory has been updated successfuly"
         ]);
     }
-
-
     public function softDelete($id)
     {
         Product::where('id', $id)->delete();

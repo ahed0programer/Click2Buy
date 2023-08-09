@@ -664,6 +664,9 @@
                                                         <option value="{{ $brand->name }}">
                                                     @endforeach
                                                 </datalist>
+
+                                                <label for="price">Price :</label>
+                                                <input type="number" id="price" name="price" placeholder="price" style="border-radius: 8px;">
                                             </div>
 
                                             <div class="form-field field-2 medium"

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('colour_id');
             $table->integer('size_id');
             $table->integer('material_id');
+            $table->string('image')->nullable();
             $table->integer('quantity')->unsigned();
             $table->float('price')->unsigned();
             $table->softDeletes();

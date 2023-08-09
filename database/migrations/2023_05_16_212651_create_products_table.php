@@ -17,6 +17,7 @@ return new class extends Migration
             $table->longText('descraption');
             $table->integer('brand_id');
             $table->integer('offer_id');
+            $table->float('price');
             $table->integer('category_id')->nullable();
             $table->float('evaluation')->nullable();
             $table->boolean('status');

@@ -75,6 +75,14 @@
             margin: 0px;
         }
 
+        .table_images{
+            transition: transform 0.5s
+        }
+
+        .table_images:hover{
+            transform: scale(3) translate(-10px , -20px)
+        }
+
         a {
             color: #f44236;
             text-decoration: none;
@@ -608,7 +616,7 @@
 
                                             <div class="form-field field-1 medium"
                                                 style="background-color: #2e3847;
-                                        border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
+                                                border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
                                                 <label for="titel">Title : </label>
                                                 <input id="titel" type="text" name="titel" placeholder="Title"
                                                     style="max-width: 100%;border-radius: 8px;"
@@ -617,7 +625,7 @@
 
                                             <div class="form-field field-4 medium"
                                                 style="background-color: #2e3847;
-                                    border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
+                                                border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
                                                 <label for="descraption"> Description</label>
                                                 <textarea id="descraption" type="text" rows="2" name="descraption" placeholder="Description"
                                                     style="max-width: 100%;border-radius: 8px;"> {!! $product->descraption !!}</textarea>
@@ -625,7 +633,7 @@
                                             
                                             <div class="form-field field-4 medium"
                                                 style="background-color: #2e3847;
-                                    border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
+                                                border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
                                                 <label for="category_id">Category:</label>
                                                 <select id="category_id" name="category_id" style="border-radius: 8px;">
                                                     @foreach ($category as $cat)
@@ -709,7 +717,73 @@
                                                 </datalist>
                                             </div>
 
+                                            <div class="form-field field-5 short"
+                                                style="background-color: #2e3847;
+                                                border-radius: 8px;padding: 22px;
+                                                box-shadow: white 3px 3px 6px;">
+                                                <label for="photos"> Images:</label>
+                                                <input id="photos" type="file" name="photos[]" multiple>
+                                                <div id="preview"></div>
+                                                <div class="slider">
+                                                    @foreach ($photos as $photo)
+                                                        <div>
+                                                            <img src="{{ asset('storage/'. $photo) }}"
+                                                                alt="product image" style="width: 40%">
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
 
+                                            <div class="form-field field-2 medium"
+                                                style="background-color: #2e3847;
+                                                border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
+                                                <label for="offer">Offer:</label>
+                                                <input type="number" id="offer" name="offer" min="1"
+                                                    max="" step="1" placeholder="Offer"
+                                                    style="border-radius: 8px;" value="{{$offer}}">
+                                                <span class="percent-symbol" style="color: white">%</span>
+                                            </div>
+
+                                            <div class="form-field field-2 medium"
+                                                style="background-color: #2e3847;
+                                                border-radius: 8px;
+                                                padding: 22px;
+                                                box-shadow: white 3px 3px 6px;">
+                                                <label for="row_id">Show In Row:</label>
+                                                <select id="row_id" name="row_id" style="border-radius: 8px;">
+                                                    @if (empty($row_product->row_id))
+                                                        <option value="none" >none</option>
+
+                                                        @foreach ($rows as $row)
+                                                            <option value="{{$row->id}}">{{$row->title}}</option>
+                                                        @endforeach
+ 
+                                                    @else
+                                                        <option value="none">none</option>
+
+                                                        @foreach ($rows as $row)
+                                                            <option value="{{$row->id}}" @if ($row->id == $row_product->row_id && $row_product->product_id == $product->id) selected @endif>{{$row->title}}</option>
+                                                        @endforeach
+                                                    @endif
+
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <button type="submit" id="submit" class="button add">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <br><hr><br>
+                                    <div class="new-post-form product">
+                                        <form id="update_variant" class="new-product-form" action="" >   
+                                            @csrf
+                                            @method('POST')
+                                            <div class="container">
+                                                <div class="title">
+                                                    <h2 style="color: white"><i>Edit variant</i> </h2>
+                                                </div>
+                                            </div>
 
                                             <div class="form-field field-2 medium"
                                                 style="background-color: #2e3847;
@@ -748,7 +822,6 @@
                                                         <input type="checkbox" name="sizes[]" value="{{ $size->size }}" @if ($isChecked) checked @endif>{{ $size->size }}<br>
                                                     @endforeach
                                                 </div>
-
                                                 <div><button type="button" id="generate" onclick="generatePossibilities()" class="button" >Generate Possibilities</button></div>
                                                 <br><br>
                                                 <table id="possibilities-table" for="possibilities">
@@ -769,80 +842,26 @@
                                                                 <th>{{$inventory->colour}}</th>
                                                                 <th>{{$inventory->material}}</th>
                                                                 <th>{{$inventory->size}}</th>
-                                                                <th><img src="{{asset('image/delete.png')}}" alt="not avalible" style="width:150px"><input type="file"></th>
+                                                                <th><img class="table_images" name="vairiant_images" src="{{asset('storage/'.$inventory->image)}}" alt="not avalible" style="width:100px"><input type="file" name="vairiant_images[]"></th>
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->price}}"></th>
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->quantity}}"></th>
                                                                 <th><button type="button" onclick="delete_inventory({{$inventory->id}})"> <img src="{{asset('image/delete.png')}}" alt="delete" style="width:20px"></button>
-                                                                    <button type="button" onclick="update_inventory({{$inventory->id}})"> <img src="{{asset('image/edit.png')}}" alt="delete" style="width:20px"></button></th>
+                                                                    <button type="button" onclick="update_inventory({{$inventory->id}})"> <img src="{{asset('image/edit.png')}}" alt="delete" style="width:20px"></button>
+                                                                    <input type="checkbox" style="width:20px">
+                                                                </th>
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
                                                     <input id="asset_path" type="hidden" value="{{asset("/")}}">
                                                     <tbody id="second_body" style="background-color: #277929">
-                                                    </tbody>                           
+                                                    </tbody>                     
                                                 </table>
-                                                <div class="hover-image">
-                                                    <img src="{{asset("image/plus.png")}}" alt="">
-                                                </div> 
-                                            </div>
-
-                                            <div class="form-field field-5 short"
-                                                style="background-color: #2e3847;
-                                                border-radius: 8px;padding: 22px;
-                                                box-shadow: white 3px 3px 6px;">
-                                                <label for="photos"> Images:</label>
-                                                <input id="photos" type="file" name="photos[]" multiple>
-                                                <div id="preview"></div>
-                                                <div class="slider">
-                                                    @foreach ($photos as $photo)
-                                                        <div>
-                                                            <img src="{{ asset('storage/'. $photo) }}"
-                                                                alt="product image" style="width: 40%">
-                                                        </div>
-                                                    @endforeach
+                                                <br>
+                                                <div>
+                                                    <button type="submit" id="submit" class="button add">Save</button>
                                                 </div>
                                             </div>
-
-
-
-                                            <div class="form-field field-2 medium"
-                                                style="background-color: #2e3847;
-                                            border-radius: 8px;padding: 22px;box-shadow: white 3px 3px 6px;">
-                                                <label for="offer">Offer:</label>
-                                                <input type="number" id="offer" name="offer" min="1"
-                                                    max="" step="1" placeholder="Offer"
-                                                    style="border-radius: 8px;" value="{{$offer}}">
-                                                <span class="percent-symbol" style="color: white">%</span>
-                                            </div>
-
-                                            <div class="form-field field-2 medium"
-                                                style="background-color: #2e3847;
-                                                border-radius: 8px;
-                                                padding: 22px;
-                                                box-shadow: white 3px 3px 6px;">
-                                                <label for="row_id">Show In Row:</label>
-                                                <select id="row_id" name="row_id" style="border-radius: 8px;">
-                                                    @if (empty($row_product->row_id))
-                                                        <option value="none" >none</option>
-
-                                                        @foreach ($rows as $row)
-                                                            <option value="{{$row->id}}">{{$row->title}}</option>
-                                                        @endforeach
- 
-                                                    @else
-                                                        <option value="none">none</option>
-
-                                                        @foreach ($rows as $row)
-                                                            <option value="{{$row->id}}" @if ($row->id == $row_product->row_id && $row_product->product_id == $product->id) selected @endif>{{$row->title}}</option>
-                                                        @endforeach
-                                                    @endif
-
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <button type="submit" id="submit" class="button add">Save</button>
-                                            </div>
+                                            
                                         </form>
                                     </div>
                                 </div>
@@ -945,7 +964,6 @@
 <script>
     var possibilities = [];
     var assets_path = document.getElementById("asset_path").value;
-    const selections = document.getElementById('selections')
     //var taken_options = {{json_encode($productsInventory)}}
 
     function check_if_option_not_taken(option){
@@ -1022,7 +1040,7 @@
             colorCell.innerHTML = possibility.color;
             materialCell.innerHTML = possibility.material;
             sizeCell.innerHTML = possibility.size;
-            imageCell,innerHTML="<input type='file'>";
+            imageCell.innerHTML="<input type='file'>";
             priceCell.innerHTML = "<input type='number' min='0' value='0' onchange='updatePrice(" + i +
                 ", this.value)'>";
             quantityCell.innerHTML = "<input type='number' min='0' value='0' onchange='updateQuantity(" + i +
@@ -1030,9 +1048,6 @@
             actionCell.innerHTML = "<button type='button' onclick='deletePossibility("+ i +")'><img src='"+assets_path+"image/delete.png' style='width:20px' alt='Remove'></button>"
                                   +"<button type='button' onclick='add_inventory("+ i +")'><img src='"+assets_path+"image/plus.png' style='width:20px' alt='ADD'></button>";
         }
-
-        //const selections = document.getElementById('selections')
-        selections.value=possibilities;
     }
 
     function updatePrice(index, value) {
@@ -1043,57 +1058,17 @@
         possibilities[index].quantity = parseInt(value);
     }
     
-    
     function deletePossibility(index) {
-        
-        // Perform your desired action here
-        
         // Get table and row
         var table = document.getElementById("second_body");
         // var row = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[index];
 
-        // // Check if row is locked
-        // if (row.getAttribute("data-locked") === "true") {
-        //     alert("Cannot delete a locked possibility.");
-        //     return;
-        // }
-
         // Remove possibility from array
         possibilities.splice(index, 1);
-
-        //const selections = document.getElementById('selections')
-        //selections.value=possibilities;
 
         var row = document.getElementById("row"+index)
         // Remove row from table
         row.remove(row)
-        //table.deleteRow(index);
-    }
-
-
-    function saveProduct() {
-        var possibilities = generatePossibilities(); // توليد المصفوفة
-
-        // قم باسترداد بيانات النموذج
-        var formData = new FormData($(".new-product-form")[0]);
-
-        // أضف المصفوفة المتولدة إلى بيان البيانات
-        //formData.append("possibilities", JSON.stringify(possibilities));
-
-        // إرسال طلب HTTP POST باستخدام AJAX
-        $.ajax({
-            type: "POST",
-            url: "{{ route('creatProduct') }}",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                alert("Product saved successfully.");
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error saving product: " + errorThrown);
-            }
-        });
     }
 </script>
 
@@ -1150,24 +1125,36 @@
         .then(data => {
             // Handle the response from the server
             alert(data.message);
+            var trElement = document.getElementById("inventory_"+id);
+            trElement.remove(trElement);
         })
         .catch(error => {
             // Handle any errors
             alert(error);
+          
         });
     }
 
     function add_inventory(index){
 
         var row = document.getElementById("row"+index)
+
+        var inputElements = row.getElementsByTagName("input");
+
+        var Image_file = inputElements[0].files[0];
+
+        const form = new FormData();
+
+        form.append('image',Image_file);
+        form.append("option",JSON.stringify(possibilities[index]))
+        
         // Send AJAX request
         fetch('{{asset("/addInventory-To-Product/")}}'+'/'+"{{$product->id}}", {
             method: 'POST',
             headers:{
-                'Content-Type':'application/json',
                 'X-CSRF-TOKEN':'{{csrf_token()}}'
             },
-            body: JSON.stringify({"option":possibilities[index]})
+            body:form
             })
             .then(response => response.json())
             .then(data => {
@@ -1179,19 +1166,22 @@
                 var possibility = possibilities[index];
                 var row = table.insertRow();
                 row.style.color="white";
+                row.id="inventory_"+data.id
                 var colorCell = row.insertCell(0);
                 var materialCell = row.insertCell(1);
                 var sizeCell = row.insertCell(2);
-                var priceCell = row.insertCell(3);
-                var quantityCell = row.insertCell(4);
-                var actionCell = row.insertCell(5);
+                var imageCell = row.insertCell(3);
+                var priceCell = row.insertCell(4);
+                var quantityCell = row.insertCell(5);
+                var actionCell = row.insertCell(6);
                 colorCell.innerHTML = possibility.color;
                 materialCell.innerHTML = possibility.material;
                 sizeCell.innerHTML = possibility.size;
-                priceCell.innerHTML="<input type='number' value='"+possibility.price+"'>";
-                quantityCell.innerHTML="<input type='number' value='"+possibility.quantity+"'>";
-                actionCell.innerHTML = "<button type='button' onclick='delete_inventory("+ data.id +")'><img src='"+assets_path+"image/delete.png' style='width:20px' alt='Remove'></button>";
-
+                imageCell.innerHTML="<input type='file'>"
+                priceCell.innerHTML="<input class='input-quantity' type='number' value='"+possibility.price+"'>";
+                quantityCell.innerHTML="<input class='input-quantity' type='number' value='"+possibility.quantity+"'>";
+                actionCell.innerHTML = "<button type='button' onclick='delete_inventory("+ data.id +")'><img src='"+assets_path+"image/delete.png' style='width:20px' alt='Remove'></button>"
+                + "<button type='button' onclick='update_inventory("+data.id +")'><img src='"+assets_path+"image/edit.png' style='width:20px' alt='update'></button>";
             })
             .catch(error => {
                 // Handle any errors
@@ -1205,14 +1195,15 @@
         var inputElements = trElement.getElementsByTagName("input");
 
         // Access the values of input elements
-        var price = inputElements[0].value;
-        var quantity = inputElements[1].value;
+        var price = inputElements[1].value;
+        var quantity = inputElements[2].value;
+        var Image_file = inputElements[0].files[0];
 
         formData =new FormData();
-        // Image_file = $('#image')[0].files[0];
+        
 
         alert("q "+quantity +" p "+price)
-        //formData.append('image',Image_file);
+        formData.append('image',Image_file);
         formData.append('price',price);
         formData.append('quantity',quantity);
 
