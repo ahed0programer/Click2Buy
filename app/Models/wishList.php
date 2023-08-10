@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\showproductResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,5 +26,13 @@ class wishList extends Model
     public function user()
     {
         return $this->belongsTo(User::class , 'user_id');
+    }
+
+    public function get_product($product_id)
+    {
+        $product = Product::where('id' , $product_id)->get();
+        return showproductResource::collection($product);
+
+        
     }
 }
