@@ -59,10 +59,6 @@ Route::get('details_product/{id}', [detailsProductController::class, "details_pr
 
 
 
-
-
-
-
 //super Admin
 // Route::post('add_new_account', [superAdminController::class, "add_new_account"]);
 // Route::post('edit_account/{id}', [superAdminController::class, "edit_account"]);
@@ -117,12 +113,7 @@ Route::middleware(['auth:sanctum','verified'])->group(function () {
     Route::post('edit_password', [userController::class, "edit_password"]);
     Route::get('check_password', [userController::class, "check_password"]);
 
-
-
 }); //end group middleware
-
-
-
 
 
 Route::get('send-notification', [OtpController::class, "send_notification"]);

@@ -94,7 +94,7 @@ class ProductController extends Controller
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('photos_product');//تم تعديل المسار من خلال مسح public
+                $path = $photo->store('photos_product','public');//تم تعديل المسار من خلال مسح public
                 photoProduct::create([
                     'photo' => $path,
                     'product_id' => $product->id,
