@@ -107,6 +107,7 @@ class Product extends Model
         $category = Category::where('id', $category_id)->first(['id', 'name']);
         return $category;
     }
+    
 
     public function getattribut($id)
     {
@@ -114,7 +115,7 @@ class Product extends Model
             ->join('colours', 'inventories.colour_id', '=', 'colours.id')
             ->join('materials', 'inventories.material_id', '=', 'materials.id')
             ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
-            ->select('inventories.id as inventory_id', 'colours.name as colour', 'materials.name as material', 'sizes.size as size','image', 'quantity', 'price')
+            ->select('inventories.id as inventory_id', 'colours.name as colour', 'materials.name as material', 'sizes.size as size','image', 'quantity')
             ->get();
         return $inventories;
     }
@@ -159,4 +160,5 @@ class Product extends Model
 
         return $product_evaluations;
     }
+    
 }

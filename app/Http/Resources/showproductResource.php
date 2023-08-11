@@ -18,6 +18,7 @@ class showproductResource extends JsonResource
             'id' => $this->id,
             'title' => $this->titel,
             'descraption' => $this->descraption,
+            'price' => $this->price,
             'brand' => $this->getBrand($this->brand_id),
             'offer' => $this->getOffer($this->offer_id),
             'category' => $this->getCategory($this->category_id),
@@ -26,7 +27,7 @@ class showproductResource extends JsonResource
             'evaluation' => $this->getEvaluation($this->id),
             'photos' => $this->getPhoto($this->id),
             'created_at' => $this->created_at,
-        
+
         ];
     }
 }
