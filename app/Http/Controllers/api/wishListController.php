@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\showproductResource;
+use App\Http\Resources\wishListResource;
 use App\Models\Product;
 use App\Models\wishList;
 use Illuminate\Http\Request;
@@ -13,11 +14,10 @@ class wishListController extends Controller
 {
     public function show_wish_list()
     {
-        $product_id = wishList::where('user_id' , Auth::user()->id)->get('product_id');
-        $product = Product::wherein('id' , $product_id)->get();
+        $wish_list = wishList::where('user_id' , Auth::user()->id)->get();
         
         return response()->json(
-            showproductResource::collection($product)
+            wishListResource::collection($wish_list)
         );
     }
 
