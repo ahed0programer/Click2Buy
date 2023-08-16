@@ -4,9 +4,13 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\orderDetailsResource;
+use App\Http\Resources\productsWithaQuantityThatIsNotCommensurateWithTheDemandResource;
+use App\Http\Resources\quantityInventoryResource;
 use App\Models\Inventory;
+use App\Models\Offer;
 use App\Models\Order;
 use App\Models\orderDetails;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,31 +18,68 @@ class orderController extends Controller
 {
     public function add_order(Request $request)
     {
-        $orderid = Order::create([
-            'user_id' => Auth::user()->id,
-            'total_price' => $request->total_price,
-            'delivery_company_address_id' => $request->delivery_company_address_id,
-            'status' => 'waiting',
-        ]);
+        $total_price = 0;
 
         foreach ($request->input('orders') as $order) {
-            orderDetails::create([
-                'order_id' => $orderid->id,
-                'product_id' => Inventory::where('id', $order['inventory_id'])->first()->product_id,
-                'inventory_id' => $order['inventory_id'],
-                'quantity' => $order['quantity'],
-            ]);
-
-            $quantity = Inventory::where('id', $order['inventory_id'])->first()->quantity;
-            Inventory::where('id', $order['inventory_id'])->update([
-                'quantity' => $quantity - $order['quantity'],
-            ]);
+            $quantity_inventory = Inventory::where('id', $order['inventory_id'])->first()->quantity;
+            if ($order['quantity'] <= $quantity_inventory) {
+                $product = Inventory::where('id', $order['inventory_id'])->first();
+                $offer_id = Product::where('id', $product->product_id)->first()->offer_id;
+                $offer = Offer::where('id', $offer_id)->first()->value;
+                if ($offer == null) {
+                    $price_inventory =  ($order['quantity'] * $product->price);
+                } else {
+                    $price_inventory =  ($order['quantity'] * $product->price);
+                    $offer = $offer / 100;
+                    $ammount_of_offer = $offer * $price_inventory;
+                    $price_inventory = $price_inventory - $ammount_of_offer;
+                }
+            } else {
+                $price_inventory = 0;
+            }
+            $total_price = $price_inventory + $total_price;
         }
 
-        return response()->json([
-            'message' => 'order added'
-        ]);
+        if ($total_price != 0) {
+            $orderid = Order::create([
+                'user_id' => Auth::user()->id,
+                'total_price' => $total_price,
+                'delivery_company_address_id' => $request->delivery_company_address_id,
+                'status' => 'waiting',
+            ]);
+
+
+
+            foreach ($request->input('orders') as $order) {
+
+                $quantity_inventory = Inventory::where('id', $order['inventory_id'])->first()->quantity;
+
+                if ($order['quantity'] <= $quantity_inventory) {
+                    orderDetails::create([
+                        'order_id' => $orderid->id,
+                        'product_id' => Inventory::where('id', $order['inventory_id'])->first()->product_id,
+                        'inventory_id' => $order['inventory_id'],
+                        'quantity' => $order['quantity'],
+                    ]);
+
+                    $quantity = Inventory::where('id', $order['inventory_id'])->first()->quantity;
+                    Inventory::where('id', $order['inventory_id'])->update([
+                        'quantity' => $quantity - $order['quantity'],
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'message' => 'order added'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'These quantities are not available',
+
+            ], 403);
+        }
     }
+
 
 
     public function update_order(Request $request, $id)
@@ -65,7 +106,6 @@ class orderController extends Controller
 
 
                 orderDetails::where('order_id', $request->order_id)->where('inventory_id', $deletions)->delete();
-
             }
 
 
@@ -95,7 +135,7 @@ class orderController extends Controller
 
         return response()->json([
             'message' => 'We apologize that this order has entered the delivery stage'
-        ]);
+        ], 403);
     }
 
 
@@ -107,9 +147,20 @@ class orderController extends Controller
 
     }
 
-    public function order_user()
+    public function quantity_inventory(Request $request)
     {
-        $order = Order::where('user_id' , Auth::user()->id)->get();
+        $inventory_ids = Inventory::wherein('id', $request->input('inventory_ids'))->get();
+
+        return response()->json(
+            quantityInventoryResource::collection($inventory_ids)
+        );
+    }
+
+    public function order_user(Request $request)
+    {
+        $page = $request->page;
+        $perPage = 7;
+        $order = Order::where('user_id', Auth::user()->id)->skip(($page - 1) * $perPage)->take($perPage)->get();
         return response()->json(
             orderDetailsResource::collection($order)
         );

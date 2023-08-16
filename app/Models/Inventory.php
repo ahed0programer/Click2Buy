@@ -40,4 +40,17 @@ class Inventory extends Model
     {
         return $this->belongsTo(Material::class);
     }
+
+    public function get_obtaining_product_details_with_disproportionate_quantity($inventory_id)
+    {
+        $inventories = inventory::where('id', $inventory_id)
+            ->join('colours', 'inventories.colour_id', '=', 'colours.id')
+            ->join('materials', 'inventories.material_id', '=', 'materials.id')
+            ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
+            ->join('products', 'inventories.product_id', '=', 'products.id')
+            ->select('products.titel as title', 'colours.name as colour', 'materials.name as material', 'sizes.size as size' , 'inventories.price as price' , 'inventories.image as photo' , 'inventories.quantity as ss')
+            ->get();
+
+        return $inventories;
+    }
 }

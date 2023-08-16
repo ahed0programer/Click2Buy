@@ -13,7 +13,8 @@ class userController extends Controller
     public function edit_name_phone(Request $request)
     {
         User::where('id', Auth::user()->id)->update([
-            'name' => $request->name
+            'name' => $request->name,
+            'phone_number' => $request->phone_number
         ]);
 
         return response()->json([

@@ -13,16 +13,16 @@ class deliveryCompanyController extends Controller
     public function deliveryCompany()
     {
         $deliveryCompany = deliveryCompany::get(['id' , 'name']);
-        return response()->json([
-            'deliveryCompany' => $deliveryCompany
-        ]);
+        return response()->json(
+            $deliveryCompany
+        );
     }
 
     public function deliveryCompanyaddress($id)
     {
         $deliveryCompanyaddress = deliveryCompanyAddress::where('delivery_companies_id' , $id)->get();
-        return response()->json([
-            'deliveryCompany' => deliveryCompanyAddressResource::collection($deliveryCompanyaddress)
-        ]);
+        return response()->json(
+            deliveryCompanyAddressResource::collection($deliveryCompanyaddress)
+        );
     }
 }

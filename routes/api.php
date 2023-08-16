@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\api\commentEvaluationController;
 use App\Http\Controllers\api\deliveryCompanyController;
 use App\Http\Controllers\api\detailsProductController;
 use App\Http\Controllers\api\filterController;
@@ -76,6 +77,10 @@ Route::get('search_filter', [filterController::class, "search_filter"]);
 Route::get('deliveryCompany', [deliveryCompanyController::class, "deliveryCompany"]);
 Route::get('deliveryCompanyaddress/{id}', [deliveryCompanyController::class, "deliveryCompanyaddress"]);
 
+//quantity_inventory
+Route::get('quantity_inventory', [orderController::class, "quantity_inventory"]);
+
+
 
 // group middleware
 Route::middleware(['auth:sanctum','verified'])->group(function () {
@@ -92,6 +97,16 @@ Route::middleware(['auth:sanctum','verified'])->group(function () {
     Route::post('add_evaluation/{product_id}', [EvaluationController::class, "add_evaluation"]);
     Route::post('edit_evaluation/{evaluation_id}', [EvaluationController::class, "edit_evaluation"]);
     Route::delete('soft_delete_evaluation/{evaluation_id}', [EvaluationController::class, "soft_delete_evaluation"]);
+
+
+
+    //comment and evaluation
+    Route::post('add_comment_evaluation/{product_id}', [commentEvaluationController::class, "add_comment_evaluation"]);
+    Route::post('edit_comment_evaluation/{evaluation_id}/{comment_id}', [commentEvaluationController::class, "edit_comment_evaluation"]);
+    Route::get('get_user_comment_evaluation', [commentEvaluationController::class, "get_user_comment_evaluation"]);
+
+
+
 
     //profile
     Route::get('profile', [ProfileController::class, "profile"]);
@@ -111,7 +126,7 @@ Route::middleware(['auth:sanctum','verified'])->group(function () {
     //user
     Route::post('edit_name_phone', [userController::class, "edit_name_phone"]);
     Route::post('edit_password', [userController::class, "edit_password"]);
-    Route::get('check_password', [userController::class, "check_password"]);
+    Route::post('check_password', [userController::class, "check_password"]);
 
 }); //end group middleware
 

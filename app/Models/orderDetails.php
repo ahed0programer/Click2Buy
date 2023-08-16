@@ -33,6 +33,8 @@ class orderDetails extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    
     
     
 }

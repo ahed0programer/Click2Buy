@@ -81,12 +81,12 @@ class filterController extends Controller
 
         if ($product_query->where('status' , 1)->count() > 0) {
             $products = $product_query->latest()->get();
-            return response()->json([
-                'product' => showproductResource::collection($products)
-            ]);
+            return response()->json(
+                showproductResource::collection($products)
+            );
         } else
         return response()->json([
-            'message' => "No Product"
+            
         ]);
             
     }

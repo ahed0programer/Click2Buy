@@ -71,12 +71,13 @@ class Order extends Model
     public function get_details_product($order_id)
     {
         $order_details = orderDetails::where('order_id', $order_id)
-        ->join('inventories', 'order_details.inventory_id', '=', 'inventories.id')
-        ->join('colours', 'inventories.colour_id', '=', 'colours.id')
-        ->join('materials', 'inventories.material_id', '=', 'materials.id')
-        ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
-        ->select('inventories.id as inventory_id' , 'colours.name as colour', 'materials.name as material', 'sizes.size as size', 'order_details.quantity')
-                ->get();
+            ->join('inventories', 'order_details.inventory_id', '=', 'inventories.id')
+            ->join('colours', 'inventories.colour_id', '=', 'colours.id')
+            ->join('materials', 'inventories.material_id', '=', 'materials.id')
+            ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
+            ->join('products', 'inventories.product_id', '=', 'products.id')
+            ->select('inventories.id as inventory_id', 'products.titel as title', 'colours.name as colour', 'materials.name as material', 'sizes.size as size', 'order_details.quantity' , 'inventories.price as price' , 'inventories.image as photo')
+            ->get();
 
         return $order_details;
     }

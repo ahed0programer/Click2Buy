@@ -14,7 +14,7 @@ class ProfileController extends Controller
 {
     public function profile()
     {
-        $information = User::where('id' , auth::User()->id)->get(['name' , 'email']);
+        $information = User::where('id' , auth::User()->id)->get(['name' , 'email' , 'phone_number']);
         return response()->json([
             'status' => 1,
             'information' => $information

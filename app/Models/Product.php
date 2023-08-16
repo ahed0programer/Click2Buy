@@ -38,7 +38,7 @@ class Product extends Model
     {
         return $this->belongsToMany(wishList::class, 'wish_lists');
     }
-    
+
 
     public function brand()
     {
@@ -62,7 +62,7 @@ class Product extends Model
         return $this->belongsToMany(Colour::class, 'inventories')->withPivot('size_id', 'material_id', 'quantity');
     }
 
-    
+
 
 
     public function Materials()
@@ -107,7 +107,7 @@ class Product extends Model
         $category = Category::where('id', $category_id)->first(['id', 'name']);
         return $category;
     }
-    
+
 
     public function getattribut($id)
     {
@@ -115,7 +115,7 @@ class Product extends Model
             ->join('colours', 'inventories.colour_id', '=', 'colours.id')
             ->join('materials', 'inventories.material_id', '=', 'materials.id')
             ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
-            ->select('inventories.id as inventory_id', 'colours.name as colour', 'materials.name as material', 'sizes.size as size','image', 'quantity')
+            ->select('inventories.id as inventory_id', 'colours.name as colour', 'materials.name as material', 'sizes.size as size', 'price', 'quantity', 'image')
             ->get();
         return $inventories;
     }
@@ -160,5 +160,4 @@ class Product extends Model
 
         return $product_evaluations;
     }
-    
 }
