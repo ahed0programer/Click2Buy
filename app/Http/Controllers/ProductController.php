@@ -34,7 +34,7 @@ class ProductController extends Controller
     public function creat_product(Request $request)
     {
         //$possibilities = $request->selection;
-       
+
 
         $possibilities = json_decode($request->possibilities);
 
@@ -49,12 +49,12 @@ class ProductController extends Controller
             ]);
         }
 
-        
+
         $category_id = Category::where('id', $request->category_id)->first()->id;
         $brand_id = Brand::where('name', $request->brand)->first()->id;
         $offer_id = Offer::where('value', $request->offer)->first()->id;
 
-        
+
 
         $product = Product::create([
             'titel' => $request->title,
@@ -86,7 +86,7 @@ class ProductController extends Controller
                 'colour_id' => $color_model->id,
                 'material_id' => $material_model->id,
                 'size_id' => $size_model->id,
-                'image'=>'not found',
+                'image' => 'not found',
                 'price' => $possibility->price,
                 'quantity' => $possibility->quantity
             ]);
@@ -94,7 +94,7 @@ class ProductController extends Controller
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('photos_product','public');//تم تعديل المسار من خلال مسح public
+                $path = $photo->store('photos_product', 'public'); //تم تعديل المسار من خلال مسح public
                 photoProduct::create([
                     'photo' => $path,
                     'product_id' => $product->id,
@@ -108,7 +108,7 @@ class ProductController extends Controller
                 'row_id' => $request->row_id,
             ]);
         }
-        
+
         return response()->json(['message' => "it is been added successfully"]);
     }
 
@@ -128,7 +128,7 @@ class ProductController extends Controller
             ->join('colours', 'inventories.colour_id', '=', 'colours.id')
             ->join('materials', 'inventories.material_id', '=', 'materials.id')
             ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
-            ->select('inventories.id as id','colours.name as colour', 'materials.name as material', 'sizes.size as size','size_id','colour_id','material_id','image', 'quantity', 'price')
+            ->select('inventories.id as id', 'colours.name as colour', 'materials.name as material', 'sizes.size as size', 'size_id', 'colour_id', 'material_id', 'image', 'quantity', 'price')
             ->get();
 
         $colourIds = $productsInventory->pluck('colour_id');
@@ -144,7 +144,7 @@ class ProductController extends Controller
     public function edit_product(Request $request, $id)
     {
 
-       
+
 
         if (empty(Brand::where('name', $request->brand)->first())) {
             Brand::create([
@@ -156,7 +156,7 @@ class ProductController extends Controller
                 'value' => $request->offer,
             ]);
         }
-        
+
         $category_id = Category::where('id', $request->category_id)->first()->id;
         $brand_id = Brand::where('name', $request->brand)->first()->id;
         $offer_id = Offer::where('value', $request->offer)->first()->id;
@@ -177,7 +177,7 @@ class ProductController extends Controller
         // $materials = explode(',', $request->input('materials'));
         // $sizes = $request->input('sizes');
 
-        
+
         // $color_ids = [];
         // foreach ($colors as $color) {
         //     $colour = Colour::firstOrCreate(['name' => $color]);
@@ -197,7 +197,7 @@ class ProductController extends Controller
         // }
 
         // Create a new inventory record
-        
+
         // foreach ($colors as $color) {
         //     $color_model = Colour::where('name', $color)->first();
         //     if (empty($color_model)) {
@@ -254,41 +254,41 @@ class ProductController extends Controller
         }
 
         return response()->json([
-            "message"=>"it's been updated successfully"
+            "message" => "it's been updated successfully"
         ]);
     }
 
 
     public function show_product()
     {
-        $product = Product::latest()->paginate(10);
+        $products = Product::latest()->paginate(10);
 
-        // foreach ($product as $products) {
-        // $photo = photoProduct::where('product_id' , $products->id)->first();
-
-        // }
+        $product = showproductResource::collection($products);
+        // return $product;
         return view('dashbord/product/dashboard', compact('product'));
     }
 
-    public function delete_inventory($id){
+    public function delete_inventory($id)
+    {
         $inventory = Inventory::find($id);
-        
+
         if ($inventory) {
             $inventory->delete();
             // Record found and deleted successfully
         } else {
             // Record not found
             return response()->json([
-                "message"=>"not found"
-            ],404);
+                "message" => "not found"
+            ], 404);
         }
 
         return response()->json([
-            "message"=>"option deleted successfully"
+            "message" => "option deleted successfully"
         ]);
     }
 
-    public function add_inventory(Request $request,$id){
+    public function add_inventory(Request $request, $id)
+    {
 
         $option = json_decode($request->option);
 
@@ -302,45 +302,44 @@ class ProductController extends Controller
         }
 
         $size_model = Size::where('size', $option->size)->first();
-        
-        $path="not found";
-        if($request->hasFile('image'))
-        {
-            $path = $request->file('image')->store('inventories_photos','public');//تم تعديل المسار من خلال مسح public
+
+        $path = "not found";
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('inventories_photos', 'public'); //تم تعديل المسار من خلال مسح public
         }
 
-         $new_inventory=Inventory::create([
+        $new_inventory = Inventory::create([
             'product_id' => $id,
             'colour_id' => $color_model->id,
             'material_id' => $material_model->id,
             'size_id' => $size_model->id,
-            'image'=>$path,
+            'image' => $path,
             'price' => $option->price,
             'quantity' => $option->quantity
         ]);
 
         return response()->json([
-            "message"=>json_encode($request->option),
-            "id"=>$new_inventory->id
+            "message" => json_encode($request->option),
+            "id" => $new_inventory->id
         ]);
     }
 
-    public function update_inventory(Request $request,$id){
+    public function update_inventory(Request $request, $id)
+    {
 
-        if($request->hasFile('image'))
-        {
-            $path = $request->file('image')->store('inventories_photos','public');//تم تعديل المسار من خلال مسح public
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('inventories_photos', 'public'); //تم تعديل المسار من خلال مسح public
         }
 
-        $option =Inventory::where('id',$id)->first();
+        $option = Inventory::where('id', $id)->first();
         $option->update([
-            'price'=>$request->price,
-            'quantity'=>$request->quantity,
-            'image'=>$path
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'image' => $path
         ]);
 
         return response()->json([
-            "message"=>"inventory has been updated successfuly"
+            "message" => "inventory has been updated successfuly"
         ]);
     }
     public function softDelete($id)

@@ -55,7 +55,6 @@ class orderwebController extends Controller
         //     $order_details = orderDetails::where('order_id', $order->id)->get();
         // }
 
-       
 
         return view('dashbord/order/order', compact('orders'));
     }

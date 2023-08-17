@@ -101,9 +101,9 @@ Route::middleware(['auth:sanctum','verified'])->group(function () {
 
 
     //comment and evaluation
-    Route::post('add_comment_evaluation/{product_id}', [commentEvaluationController::class, "add_comment_evaluation"]);
-    Route::post('edit_comment_evaluation/{evaluation_id}/{comment_id}', [commentEvaluationController::class, "edit_comment_evaluation"]);
-    Route::get('get_user_comment_evaluation', [commentEvaluationController::class, "get_user_comment_evaluation"]);
+    Route::post('add_edit_comment_evaluation/{product_id}', [commentEvaluationController::class, "add_edit_comment_evaluation"]);
+    // Route::post('edit_comment_evaluation/{evaluation_id}/{comment_id}', [commentEvaluationController::class, "edit_comment_evaluation"]);
+    Route::get('get_user_comment_evaluation/{id}', [commentEvaluationController::class, "get_user_comment_evaluation"]);
 
 
 

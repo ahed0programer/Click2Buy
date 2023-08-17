@@ -21,23 +21,26 @@ class orderController extends Controller
         $total_price = 0;
 
         foreach ($request->input('orders') as $order) {
-            $quantity_inventory = Inventory::where('id', $order['inventory_id'])->first()->quantity;
-            if ($order['quantity'] <= $quantity_inventory) {
-                $product = Inventory::where('id', $order['inventory_id'])->first();
-                $offer_id = Product::where('id', $product->product_id)->first()->offer_id;
-                $offer = Offer::where('id', $offer_id)->first()->value;
-                if ($offer == null) {
-                    $price_inventory =  ($order['quantity'] * $product->price);
+            if (!empty(Inventory::where('id', $order['inventory_id'])->first())) {
+
+                $quantity_inventory = Inventory::where('id', $order['inventory_id'])->first()->quantity;
+                if ($order['quantity'] <= $quantity_inventory) {
+                    $product = Inventory::where('id', $order['inventory_id'])->first();
+                    $offer_id = Product::where('id', $product->product_id)->first()->offer_id;
+                    $offer = Offer::where('id', $offer_id)->first()->value;
+                    if ($offer == null) {
+                        $price_inventory =  ($order['quantity'] * $product->price);
+                    } else {
+                        $price_inventory =  ($order['quantity'] * $product->price);
+                        $offer = $offer / 100;
+                        $ammount_of_offer = $offer * $price_inventory;
+                        $price_inventory = $price_inventory - $ammount_of_offer;
+                    }
                 } else {
-                    $price_inventory =  ($order['quantity'] * $product->price);
-                    $offer = $offer / 100;
-                    $ammount_of_offer = $offer * $price_inventory;
-                    $price_inventory = $price_inventory - $ammount_of_offer;
+                    $price_inventory = 0;
                 }
-            } else {
-                $price_inventory = 0;
+                $total_price = $price_inventory + $total_price;
             }
-            $total_price = $price_inventory + $total_price;
         }
 
         if ($total_price != 0) {
@@ -51,21 +54,22 @@ class orderController extends Controller
 
 
             foreach ($request->input('orders') as $order) {
+                if (!empty(Inventory::where('id', $order['inventory_id'])->first())) {
+                    $quantity_inventory = Inventory::where('id', $order['inventory_id'])->first()->quantity;
 
-                $quantity_inventory = Inventory::where('id', $order['inventory_id'])->first()->quantity;
+                    if ($order['quantity'] <= $quantity_inventory) {
+                        orderDetails::create([
+                            'order_id' => $orderid->id,
+                            'product_id' => Inventory::where('id', $order['inventory_id'])->first()->product_id,
+                            'inventory_id' => $order['inventory_id'],
+                            'quantity' => $order['quantity'],
+                        ]);
 
-                if ($order['quantity'] <= $quantity_inventory) {
-                    orderDetails::create([
-                        'order_id' => $orderid->id,
-                        'product_id' => Inventory::where('id', $order['inventory_id'])->first()->product_id,
-                        'inventory_id' => $order['inventory_id'],
-                        'quantity' => $order['quantity'],
-                    ]);
-
-                    $quantity = Inventory::where('id', $order['inventory_id'])->first()->quantity;
-                    Inventory::where('id', $order['inventory_id'])->update([
-                        'quantity' => $quantity - $order['quantity'],
-                    ]);
+                        $quantity = Inventory::where('id', $order['inventory_id'])->first()->quantity;
+                        Inventory::where('id', $order['inventory_id'])->update([
+                            'quantity' => $quantity - $order['quantity'],
+                        ]);
+                    }
                 }
             }
 
@@ -88,30 +92,32 @@ class orderController extends Controller
 
             Order::where('id', $id)
                 ->update([
-                    'total_price' => $request->total_price,
+                    'total_price' => 22,
                     'delivery_company_address_id' => $request->delivery_company_address_id,
                     'status' => 'waiting',
                 ]);
 
-            foreach ($request->input('deletions') as $deletions) {
+            $count_of_order = orderDetails::where('order_id', $id)->get();
+            foreach ($request->input('deletions') as $deletion) {
+                // if ($count_of_order->count() >= 1) {
+                    $old_quantity = orderDetails::where('order_id', $id)
+                        ->where('inventory_id', $deletion)->first();
+                    $edit_quantity = Inventory::where('id', $old_quantity->inventory_id)->first();
+                    $new_quantity =  $edit_quantity->quantity + $old_quantity->quantity;
 
-                $old_quantity = orderDetails::where('order_id', $request->order_id)
-                    ->where('inventory_id', $deletions)->first();
-                $edit_quantity = Inventory::where('id', $old_quantity->inventory_id)->first();
-                $new_quantity =  $edit_quantity->quantity + $old_quantity->quantity;
-
-                Inventory::where('id', $old_quantity->inventory_id)->update([
-                    'quantity' =>  $new_quantity,
-                ]);
+                    Inventory::where('id', $old_quantity->inventory_id)->update([
+                        'quantity' =>  $new_quantity,
+                    ]);
 
 
-                orderDetails::where('order_id', $request->order_id)->where('inventory_id', $deletions)->delete();
+                    orderDetails::where('order_id', $id)->where('inventory_id', $deletion)->delete();
+                // }
             }
 
 
             foreach ($request->input('edits') as $edits) {
 
-                $old_quantity = orderDetails::where('order_id', $request->order_id)
+                $old_quantity = orderDetails::where('order_id', $id)
                     ->where('inventory_id', $edits['inventory_id'])->first();
 
                 $edit_quantity = Inventory::where('id', $old_quantity->inventory_id)->first();
@@ -121,7 +127,7 @@ class orderController extends Controller
                     'quantity' =>  $new_quantity - $edits['quantity'],
                 ]);
 
-                orderDetails::where('order_id', $request->order_id)
+                orderDetails::where('order_id', $id)
                     ->where('inventory_id', $edits['inventory_id'])
                     ->update([
                         'quantity' => $edits['quantity'],

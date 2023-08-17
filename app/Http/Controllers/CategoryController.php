@@ -36,7 +36,7 @@ class CategoryController extends Controller
             'photo' => 'required|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
 
-        $image_path = $request->file('photo')->store('category_photo');//تم تعديل المسار من خلال مسح public
+        $image_path = $request->file('photo')->store('category_photo' ,'public');
         
         // Create a new root node
         if ($request->parent_id == 'none') {
@@ -122,7 +122,7 @@ class CategoryController extends Controller
     
         $old_image_path = Category::where('id', $id)->first()->photo;
         Storage::delete($old_image_path);
-        $image_path = $request->file('photo')->store('category_photo');//تم تعديل المسار من خلال مسح public
+        $image_path = $request->file('photo')->store('category_photo' ,'public');//تم تعديل المسار من خلال مسح public
     
         if ($request->parent_id == 'none') {
             if (!empty(Category::where('id', $id)->where('parent_id', null)->first())) {

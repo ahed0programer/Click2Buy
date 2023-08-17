@@ -79,10 +79,6 @@
             transition: transform 0.5s
         }
 
-        .table_images:hover{
-            transform: scale(3) translate(-10px , -20px)
-        }
-
         a {
             color: #f44236;
             text-decoration: none;

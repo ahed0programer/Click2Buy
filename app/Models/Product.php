@@ -115,7 +115,8 @@ class Product extends Model
             ->join('colours', 'inventories.colour_id', '=', 'colours.id')
             ->join('materials', 'inventories.material_id', '=', 'materials.id')
             ->join('sizes', 'inventories.size_id', '=', 'sizes.id')
-            ->select('inventories.id as inventory_id', 'colours.name as colour', 'materials.name as material', 'sizes.size as size', 'price', 'quantity', 'image')
+            ->join('products', 'inventories.product_id', '=', 'products.id')
+            ->select('inventories.id as inventory_id','products.titel as title' , 'colours.name as colour', 'materials.name as material', 'sizes.size as size', 'inventories.price', 'quantity', 'image')
             ->get();
         return $inventories;
     }
