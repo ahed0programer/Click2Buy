@@ -19,16 +19,18 @@ class orderDeleiveredE implements ShouldBroadcast
      * Create a new event instance.
      */
     public $Message;
+    protected $user_id;
 
-    public function __construct($Message)
+    public function __construct($Message,$user_id)
     {
         //
         $this->Message=$Message;
+        $this->user_id=$user_id;
     }
 
     function broadcastAs():string
     {
-        return "orderDeleiveredE";
+        return "Order_Deleivered";
     }
     /**
      * Get the channels the event should broadcast on.
@@ -38,7 +40,7 @@ class orderDeleiveredE implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('channel-name'),
+            new Channel('order-delvired'.$this->user_id),
         ];
     }
 }

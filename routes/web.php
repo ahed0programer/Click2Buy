@@ -62,10 +62,15 @@ Route::get('show_status_order/{status}', [orderwebController::class, "show_statu
 Route::get('details_order/{id}', [orderwebController::class, "details_order"])->name('details_order');
 Route::get('processing_order/{id}', [orderwebController::class, "processing_order"])->name('processing_order');
 
+//top_bar
+Route::get('show', [TopBarController::class, "show"])->name('top_bar');
+Route::post('add_photo_top_bar', [TopBarController::class, "add_photo_top_bar"])->name('add_photo_top_bar');
+Route::get('soft_delete_photo_top_bar/{id}', [TopBarController::class, "soft_delete_photo_top_bar"])->name('soft_delete_photo_top_bar');
+
+
 }); //end group middleware
 
 Route::get('delivered_order', [orderwebController::class, "delivered_order"])->name('delivered_order');
-
 
 
 

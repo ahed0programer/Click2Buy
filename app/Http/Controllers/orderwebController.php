@@ -62,12 +62,13 @@ class orderwebController extends Controller
         //     'status' => 'delivered'
         // ]);
 
-        orderDeleiveredE::dispatch("ahed");
+        
+
+        orderDeleiveredE::dispatch("ahed",1);
 
         return "ahed dd jkkj";
 
         // $orders = Order::where('status', 'waiting')->get();
         // return view('dashbord/order/order', compact('orders'));
     }
-
 }

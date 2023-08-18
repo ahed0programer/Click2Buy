@@ -632,7 +632,7 @@
                     </div>
                 </div>
             </div>
-            <footer>
+            {{-- <footer>
                 <div class="footer-section">
                     <div class="footer-content">
                         <div class="footer-container msh-power">
@@ -660,7 +660,7 @@
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer> --}}
         </div>
 </body>
 

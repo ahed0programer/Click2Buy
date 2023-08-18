@@ -86,62 +86,59 @@ class orderController extends Controller
 
 
 
-    public function update_order(Request $request, $id)
+    public function update_order(Request $request, $order_id)
     {
-        if (Order::where('user_id', Auth::user()->id)->where('id', $id)->where('status', ['waiting', 'processing'])) {
+        if (Order::where('user_id', Auth::user()->id)->where('id', $order_id)->where('status', ['waiting', 'processing'])) {
+            $count_of_order = orderDetails::where('order_id', $order_id)->get();
 
-            Order::where('id', $id)
-                ->update([
-                    'total_price' => 22,
-                    'delivery_company_address_id' => $request->delivery_company_address_id,
-                    'status' => 'waiting',
-                ]);
 
-            $count_of_order = orderDetails::where('order_id', $id)->get();
             foreach ($request->input('deletions') as $deletion) {
-                // if ($count_of_order->count() >= 1) {
-                    $old_quantity = orderDetails::where('order_id', $id)
-                        ->where('inventory_id', $deletion)->first();
-                    $edit_quantity = Inventory::where('id', $old_quantity->inventory_id)->first();
-                    $new_quantity =  $edit_quantity->quantity + $old_quantity->quantity;
+                if ($count_of_order->count() == $deletion['inventory_id']->count()) {
+                    return "You cannot cancel the order";
+                }
+                // $old_quantity = orderDetails::where('order_id', $order_id)
+                //     ->where('inventory_id', $deletion)->first();
+                // $edit_quantity = Inventory::where('id', $old_quantity->inventory_id)->first();
+                // $new_quantity =  $edit_quantity->quantity + $old_quantity->quantity;
 
-                    Inventory::where('id', $old_quantity->inventory_id)->update([
-                        'quantity' =>  $new_quantity,
-                    ]);
+                // Inventory::where('id', $old_quantity->inventory_id)->update([
+                //     'quantity' =>  $new_quantity,
+                // ]);
 
 
-                    orderDetails::where('order_id', $id)->where('inventory_id', $deletion)->delete();
-                // }
+                // orderDetails::where('order_id', $order_id)->where('inventory_id', $deletion)->delete();
+
             }
 
 
-            foreach ($request->input('edits') as $edits) {
+            //     foreach ($request->input('edits') as $edits) {
 
-                $old_quantity = orderDetails::where('order_id', $id)
-                    ->where('inventory_id', $edits['inventory_id'])->first();
+            //         $old_quantity = orderDetails::where('order_id', $order_id)
+            //             ->where('inventory_id', $edits['inventory_id'])->first();
 
-                $edit_quantity = Inventory::where('id', $old_quantity->inventory_id)->first();
-                $new_quantity =  $edit_quantity->quantity + $old_quantity->quantity;
+            //         $edit_quantity = Inventory::where('id', $old_quantity->inventory_id)->first();
+            //         $new_quantity =  $edit_quantity->quantity + $old_quantity->quantity;
 
-                Inventory::where('id', $old_quantity->inventory_id)->update([
-                    'quantity' =>  $new_quantity - $edits['quantity'],
-                ]);
+            //         Inventory::where('id', $old_quantity->inventory_id)->update([
+            //             'quantity' =>  $new_quantity - $edits['quantity'],
+            //         ]);
 
-                orderDetails::where('order_id', $id)
-                    ->where('inventory_id', $edits['inventory_id'])
-                    ->update([
-                        'quantity' => $edits['quantity'],
-                    ]);
-            }
-            return response()->json([
-                'message' => 'order updated'
-            ]);
+            //         orderDetails::where('order_id', $order_id)
+            //             ->where('inventory_id', $edits['inventory_id'])
+            //             ->update([
+            //                 'quantity' => $edits['quantity'],
+            //             ]);
+            //     }
+            //     return response()->json([
+            //         'message' => 'order updated'
+            //     ]);
+            // }
+
+
+            // return response()->json([
+            //     'message' => 'We apologize that this order has entered the delivery stage'
+            // ], 403);
         }
-
-
-        return response()->json([
-            'message' => 'We apologize that this order has entered the delivery stage'
-        ], 403);
     }
 
 

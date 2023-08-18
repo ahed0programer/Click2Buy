@@ -261,10 +261,16 @@ class ProductController extends Controller
 
     public function show_product()
     {
-        $products = Product::latest()->paginate(10);
+        $product = photoProduct::select('photo_products.id', 'product_id', 'photo')
+            ->whereIn('photo_products.id', function ($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('photo_products')
+                    ->groupBy('product_id');
+            })
+            ->latest()
+            ->paginate(6);
 
-        $product = showproductResource::collection($products);
-        // return $product;
+
         return view('dashbord/product/dashboard', compact('product'));
     }
 
@@ -345,8 +351,9 @@ class ProductController extends Controller
     public function softDelete($id)
     {
         Product::where('id', $id)->delete();
-        //Inventory
+        Inventory::where('product_id' , $id)->delete();
         productRow::where('product_id', $id)->delete();
+        photoProduct::where('product_id', $id)->delete();
         return redirect()->back();
     }
 }

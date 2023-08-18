@@ -233,7 +233,7 @@
 
         .content .images img {
             height: 180px;
-            width: 380px;
+            width: 20px;
         }
 
         .w50 {
@@ -339,6 +339,10 @@
                         href="{{ route('showrows') }}">Row Home Page</a></li>
 
                 <li class="active"
+                    style="box-shadow: white 3px 3px 6px;width: 85%;margin-reight: auto;margin-top: 20px;"><a
+                        href="{{ route('top_bar') }}">Top Bar</a></li>
+
+                <li class="active"
                     style="box-shadow: white 3px 3px 6px;width: 85%;margin-reight: auto;margin-top: 20px;">
                     <a>Category</a>
                 </li>
@@ -363,7 +367,6 @@
                 <table class="table-product">
                     <thead>
                         <tr>
-                            <td>#</td>
                             <td>Image</td>
                             <td>Title</td>
                             <td>Category</td>
@@ -374,12 +377,12 @@
                     <tbody>
                         @foreach ($product as $prod)
                             <tr>
-                                <td>{{ $prod->id }}</td>
-                                <td><img src="{{ asset('storage' , $prod->photos) }}" alt="photo product"></td>
-
-                                <td>{{ $prod->titel }}</td>
-                                <td>{{ $prod->category->name }}</td>
-                                @if ($prod->status == 1)
+                                <td style="display: flex; justify-content: center; align-items: center;">
+                                    <img src="{{ asset('storage/'.$prod->photo) }}" alt="photo product" width="60px">
+                                </td>
+                                <td>{{ $prod->Product->titel }}</td>
+                                <td>{{ $prod->Product->category->name }}</td>
+                                @if ($prod->Product->status == 1)
                                     <td><span class="status active">Active</span></td>
                                 @else
                                     <td><span class="status draft">Draft</span></td>
@@ -387,12 +390,12 @@
                                 <td>
                                     <button class="">
                                         <i class="fa fa-pencil"></i>
-                                        <a href="{{ route('pageEditProduct', $prod->id) }}"><img src="image/edit.png"
+                                        <a href="{{ route('pageEditProduct', $prod->Product->id) }}"><img src="image/edit.png"
                                                 alt="edit" style="width:30px"></a>
                                     </button>
                                     <button class="">
                                         <i class="fa fa-trash"></i>
-                                        <a href="{{ route('softDeleteProduct', $prod->id) }}"><img
+                                        <a href="{{ route('softDeleteProduct', $prod->Product->id) }}"><img
                                                 src="{{ asset('image/delete.png') }}" alt="delete"
                                                 style="width:30px"></a>
                                     </button>
@@ -404,16 +407,20 @@
                                 <button class="button add"><a href="{{ route('pageAddProduct') }}"> Add
                                         Product</a></button>
                             </td>
+                            
                         </tr>
+                        
                     </tbody>
+                    
                 </table>
-
+               
             </div>
+            
             <div class="pagination-links">
                 {!! $product->links() !!}
             </div>
-
         </div>
+        
         <footer>
             <div class="footer-section">
                 <div class="footer-content">

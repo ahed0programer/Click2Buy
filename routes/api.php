@@ -9,6 +9,7 @@ use App\Http\Controllers\api\orderController;
 use App\Http\Controllers\api\productCategoryController;
 use App\Http\Controllers\api\productHomeController;
 use App\Http\Controllers\api\serchController;
+use App\Http\Controllers\api\topBarController;
 use App\Http\Controllers\api\userController;
 use App\Http\Controllers\api\wishListController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -80,6 +81,9 @@ Route::get('deliveryCompanyaddress/{id}', [deliveryCompanyController::class, "de
 //quantity_inventory
 Route::get('quantity_inventory', [orderController::class, "quantity_inventory"]);
 
+
+//top_bar
+Route::get('get_photo_top_bar', [topBarController::class, "get_photo_top_bar"]);
 
 
 // group middleware
