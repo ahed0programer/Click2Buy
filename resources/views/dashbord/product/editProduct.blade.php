@@ -711,6 +711,9 @@
                                                         <option value="{{ $brand->name }}">
                                                     @endforeach
                                                 </datalist>
+                                                
+                                                <label for="price">Price :</label>
+                                                <input type="number" id="price" name="price" placeholder="price" style="border-radius: 8px;">
                                             </div>
 
                                             <div class="form-field field-5 short"
@@ -842,7 +845,7 @@
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->price}}"></th>
                                                                 <th><input class="input-quantity" type="number" value="{{$inventory->quantity}}"></th>
                                                                 <th><button type="button" onclick="delete_inventory({{$inventory->id}})"> <img src="{{asset('image/delete.png')}}" alt="delete" style="width:20px"></button>
-                                                                    <button type="button" onclick="update_inventory({{$inventory->id}})"> <img src="{{asset('image/edit.png')}}" alt="delete" style="width:20px"></button>
+                                                                    <button type="button" onclick="update_inventory({{$inventory->id}})"> <img src="{{asset('image/save.png')}}" alt="delete" style="width:20px"></button>
                                                                     <input type="checkbox" style="width:20px">
                                                                 </th>
                                                             </tr>
@@ -1095,7 +1098,6 @@
        .then(response => response.json())
        .then(data => {
          // Handle the response from the server
-         alert(data.message);
      
          // Revert button text after receiving response
          submitButton.innerText = 'Save';
@@ -1126,8 +1128,7 @@
         })
         .catch(error => {
             // Handle any errors
-            alert(error);
-          
+            console.log(error);
         });
     }
 
@@ -1155,7 +1156,6 @@
             .then(response => response.json())
             .then(data => {
                 // Handle the response from the server
-                alert(data.message);
                 var table = document.getElementById('first_body');
                 var possibility_row = document.getElementById('row'+index);
                     possibility_row.remove(possibility_row)
@@ -1181,7 +1181,7 @@
             })
             .catch(error => {
                 // Handle any errors
-                alert(error);
+                console.log(error);
             });
     }
 
@@ -1197,8 +1197,6 @@
 
         formData =new FormData();
         
-
-        alert("q "+quantity +" p "+price)
         formData.append('image',Image_file);
         formData.append('price',price);
         formData.append('quantity',quantity);
@@ -1214,11 +1212,11 @@
             .then(response => response.json())
             .then(data => {
                 // Handle the response from the server
-                alert(data.message)
+                console.log(data.message)
             })
             .catch(error => {
                 // Handle any errors
-                alert(error);
+                console.log(error);
             });
     }
 </script>

@@ -33,9 +33,6 @@ class ProductController extends Controller
 
     public function creat_product(Request $request)
     {
-        //$possibilities = $request->selection;
-
-
         $possibilities = json_decode($request->possibilities);
 
         if (empty(Brand::where('name', $request->brand)->first())) {
@@ -66,9 +63,12 @@ class ProductController extends Controller
             'status' => $request->status
         ]);
 
-
+        $request->validate([
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust validation rules as needed
+        ]);
 
         // Create a new inventory record
+        $i=0;
         foreach ($possibilities as $possibility) {
 
             $color_model = Colour::where('name', $possibility->color)->first();
@@ -81,15 +81,23 @@ class ProductController extends Controller
             }
 
             $size_model = Size::where('size', $possibility->size)->first();
+
+            $path="not avaliable";
+            if ($request->images[$i]) {
+                $path = $request->images[$i]->store('inventories_photos', 'public'); //تم تعديل المسار من خلال مسح public
+            }
+
             Inventory::create([
                 'product_id' => $product->id,
                 'colour_id' => $color_model->id,
                 'material_id' => $material_model->id,
                 'size_id' => $size_model->id,
-                'image' => 'not found',
+                'image' => $path,
                 'price' => $possibility->price,
                 'quantity' => $possibility->quantity
             ]);
+
+            $i++;
         }
 
         if ($request->hasFile('photos')) {
@@ -142,10 +150,7 @@ class ProductController extends Controller
     }
 
     public function edit_product(Request $request, $id)
-    {
-
-
-
+    { 
         if (empty(Brand::where('name', $request->brand)->first())) {
             Brand::create([
                 'name' => $request->brand,
@@ -164,6 +169,7 @@ class ProductController extends Controller
         Product::where('id', $id)->update([
             'titel' => $request->titel,
             'descraption' => $request->descraption,
+            'price'=>$request->price,
             'brand_id' => $brand_id,
             'offer_id' => $offer_id,
             'category_id' => $category_id,

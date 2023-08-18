@@ -704,6 +704,7 @@
                                                             <th>Color</th>
                                                             <th>Material</th>
                                                             <th>Size</th>
+                                                            <th>Image</th>
                                                             <th>Price</th>
                                                             <th>Quantity</th>
                                                             <th>Action</th>
@@ -751,7 +752,7 @@
                                             </div>
             
                                             <div>
-                                                <button type="submit" id="submit"  class="button add">Save</button>
+                                                <button type="submit" id="submit"  class="button add">Add</button>
                                             </div>
 
                                         </form>
@@ -895,22 +896,23 @@
             var colorCell = row.insertCell(0);
             var materialCell = row.insertCell(1);
             var sizeCell = row.insertCell(2);
-            var priceCell = row.insertCell(3);
-            var quantityCell = row.insertCell(4);
-            var actionCell = row.insertCell(5);
+            var imageCell = row.insertCell(3);
+            var priceCell = row.insertCell(4);
+            var quantityCell = row.insertCell(5);
+            var actionCell = row.insertCell(6);
             colorCell.innerHTML = possibility.color;
             materialCell.innerHTML = possibility.material;
             sizeCell.innerHTML = possibility.size;
+            imageCell.innerHTML = "<input type='file' name='images[]' required >"
             priceCell.innerHTML = "<input type='number' min='0' value='0' onchange='updatePrice(" + i +
                 ", this.value)'>";
             quantityCell.innerHTML = "<input type='number' min='0' value='0' onchange='updateQuantity(" + i +
                 ", this.value)'>";
-            actionCell.innerHTML = "<button type='button' onclick='deletePossibility(" +i + ")'>Delete</button>";
+            actionCell.innerHTML = "<button type='button' onclick='deletePossibility("+i + ")'>Delete</button>";
         }
 
         //const selections = document.getElementById('selections')
         selections.value=possibilities;
-
     }
 
     function updatePrice(index, value) {
@@ -1000,10 +1002,10 @@
       .then(response => response.json())
       .then(data => {
         // Handle the response from the server
-        alert(data.message);
-    
         // Revert button text after receiving response
         submitButton.innerText = 'Add';
+
+        window.location.href='{{route("dashboard")}}';
       })
       .catch(error => {
         // Handle any errors
