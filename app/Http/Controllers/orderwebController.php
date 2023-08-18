@@ -62,10 +62,12 @@ class orderwebController extends Controller
 
     public function delivered_order($order_id)
     {
-        $order=Order::where('id' , $order_id)->update([
+        Order::where('id' , $order_id)->update([
             'status' => 'delivered'
         ]);
 
+        $order=Order::where('id' , $order_id)->first();
+        
         orderDeleiveredE::dispatch("order delivered",$order,$order->user_id);
 
         $orders = Order::where('status', 'waiting')->get();
