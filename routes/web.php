@@ -64,7 +64,7 @@ Route::get('processing_order/{id}', [orderwebController::class, "processing_orde
 
 }); //end group middleware
 
-
+Route::get('delivered_order', [orderwebController::class, "delivered_order"])->name('delivered_order');
 
 
 

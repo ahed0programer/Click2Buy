@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\orderDeleiveredE;
+use App\Events\OrderDelivered;
 use App\Http\Resources\orderDetailsResource;
 use App\Models\deliveryCompanyAddress;
 use App\Models\Evaluation;
@@ -51,11 +53,21 @@ class orderwebController extends Controller
 
         $orders = Order::where('status', 'waiting')->get();
 
-        // foreach ($orders as $order) {
-        //     $order_details = orderDetails::where('order_id', $order->id)->get();
-        // }
-
-
         return view('dashbord/order/order', compact('orders'));
     }
+
+    public function delivered_order()
+    {
+        // $order =Order::where('id' , $order_id)->update([
+        //     'status' => 'delivered'
+        // ]);
+
+        orderDeleiveredE::dispatch("ahed");
+
+        return "ahed dd jkkj";
+
+        // $orders = Order::where('status', 'waiting')->get();
+        // return view('dashbord/order/order', compact('orders'));
+    }
+
 }

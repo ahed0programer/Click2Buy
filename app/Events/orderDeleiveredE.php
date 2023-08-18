@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use GuzzleHttp\Psr7\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -10,20 +11,25 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class OrderDelivered
+class orderDeleiveredE implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $order;
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public $Message;
+
+    public function __construct($Message)
     {
         //
-        
+        $this->Message=$Message;
     }
 
+    function broadcastAs():string
+    {
+        return "orderDeleiveredE";
+    }
     /**
      * Get the channels the event should broadcast on.
      *
@@ -32,7 +38,7 @@ class OrderDelivered
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new Channel('channel-name'),
         ];
     }
 }
