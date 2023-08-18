@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RowController;
 use App\Http\Controllers\sizeController;
 use App\Http\Controllers\teamController;
+use App\Http\Controllers\TopBarController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -70,7 +71,7 @@ Route::get('soft_delete_photo_top_bar/{id}', [TopBarController::class, "soft_del
 
 }); //end group middleware
 
-Route::get('delivered_order', [orderwebController::class, "delivered_order"])->name('delivered_order');
+Route::get('delivered_order/{id}', [orderwebController::class, "delivered_order"])->name('delivered_order');
 
 
 

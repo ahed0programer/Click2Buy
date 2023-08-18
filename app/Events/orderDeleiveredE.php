@@ -18,13 +18,15 @@ class orderDeleiveredE implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public $Message;
+    public $title;
+    public $body;
     protected $user_id;
 
-    public function __construct($Message,$user_id)
+    public function __construct($Message,$order,$user_id)
     {
         //
-        $this->Message=$Message;
+        $this->title=$Message;
+        $this->body =$order;
         $this->user_id=$user_id;
     }
 
